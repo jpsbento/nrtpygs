@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+    gsi:
+        environment:
+          - PYTHONDONTWRITEBYTECODE=1
+        env_file:
+          - environment.env
+          - secrets.env
+        build:
+            context: .
+            dockerfile: ./docker/gsi/Dockerfile
+        image: gsi
+        container_name: gsi
+
+    rmq:
+        env_file:
+          - environment.env
+          - secrets.env
+        build:
+            context: .
+            dockerfile: ./docker/rmq/Dockerfile
+        image: rmq
+        container_name: rcsmq
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+
+
+    test-service:
+        environment:
+          - PYTHONDONTWRITEBYTECODE=1
+        env_file:
+            - environment.env
+            - secrets.env
+        build:
+            context: .
+            dockerfile: ./docker/test/Dockerfile
+        image: test-service
+        container_name: test-service
+        restart: on-failure
+        depends_on:
+            - gsi
+            - rmq
