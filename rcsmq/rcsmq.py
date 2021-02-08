@@ -47,7 +47,6 @@ connection.close()
 
 
 
-
 class RCSmq():
     """
     RCS Messaging queue library using pika with RabbitMQ
