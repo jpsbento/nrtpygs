@@ -21,7 +21,7 @@ services:
             context: .
             dockerfile: ./docker/rmq/Dockerfile
         image: rmq
-        container_name: rcsmq
+        container_name: rmq
         ports:
             - "5672:5672"
             - "15672:15672"
