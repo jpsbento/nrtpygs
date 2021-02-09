@@ -43,3 +43,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy the code
 COPY --chown=rcs:rcs rcsmq/ /opt/code/
+
+# Set working directory
+WORKDIR /opt/code

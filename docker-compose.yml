@@ -1,17 +1,17 @@
-version: '3.7'
+version: '3.8'
 
 services:
     gsi:
         environment:
           - PYTHONDONTWRITEBYTECODE=1
-        env_file:
-          - environment.env
-          - secrets.env
         build:
             context: .
             dockerfile: ./docker/gsi/Dockerfile
         image: gsi
         container_name: gsi
+        command: tail -f /dev/null
+        depends_on:
+            - rmq
 
     rmq:
         env_file:
@@ -25,20 +25,3 @@ services:
         ports:
             - "5672:5672"
             - "15672:15672"
-
-
-    test-service:
-        environment:
-          - PYTHONDONTWRITEBYTECODE=1
-        env_file:
-            - environment.env
-            - secrets.env
-        build:
-            context: .
-            dockerfile: ./docker/test/Dockerfile
-        image: test-service
-        container_name: test-service
-        restart: on-failure
-        depends_on:
-            - gsi
-            - rmq
