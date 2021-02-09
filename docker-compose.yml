@@ -4,6 +4,9 @@ services:
     gsi:
         environment:
           - PYTHONDONTWRITEBYTECODE=1
+        env_file:
+          - environment.env
+          - testsecrets.env
         build:
             context: .
             dockerfile: ./docker/gsi/Dockerfile
@@ -16,7 +19,7 @@ services:
     rmq:
         env_file:
           - environment.env
-          - secrets.env
+          - testsecrets.env
         build:
             context: .
             dockerfile: ./docker/rmq/Dockerfile
