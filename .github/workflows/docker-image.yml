@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bring up the gsi and rmq
+      run: docker-compose up -d
+    - name: Run tests on the gsi
+      run: docker run gsi pytest
+    - name: Bring down the system
+      run: docker-compose down
+    - name: Build the Docker image
+      run: docker build . --file docker/gsi/Dockerfile --tag gsi:$(date +%s)
