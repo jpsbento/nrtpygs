@@ -37,6 +37,7 @@ jobs:
       run: docker build . --file docker/gsi/Dockerfile --tag gsi:$(date +%s)
 
   reportResult:
+    runs-on: ubuntu-latest
     steps:
     - uses: 8398a7/action-slack@v3
       with:
