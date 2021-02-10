@@ -1,6 +1,7 @@
 
-def test_pass():
-    assert True
+class test_this():
+    def test_pass():
+        assert True
 
-def test_fail():
-    assert False
+    def test_fail():
+        assert False
