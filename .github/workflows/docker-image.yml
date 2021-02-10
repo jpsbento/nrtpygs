@@ -7,11 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Bring up the gsi and rmq
@@ -22,6 +19,7 @@ jobs:
       run: docker-compose down
     - name: Build the Docker image
       run: docker build . --file docker/gsi/Dockerfile --tag gsi:$(date +%s)
+  report:
     - uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
