@@ -1,7 +1,6 @@
 import datetime
 import time
 import json
-import logging as log
 import os
 import pika
 from queue import Queue
@@ -9,13 +8,13 @@ import threading
 
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
-credentials = pika.PlainCredentials(
+CREDENTIALS = pika.PlainCredentials(
     os.environ['RMQ_USER'], os.environ['RMQ_PASS']
     )
 
 CON_PARAMS = pika.ConnectionParameters(
     host=os.environ['RMQ_HOST'],
-    credentials=credentials,
+    credentials=CREDENTIALS,
     )
 
 LOGLEVELS = {
@@ -37,14 +36,14 @@ while True:
     try:
         connection = pika.BlockingConnection(CON_PARAMS)
         break
-    except:
+    except Exception as e:
+        print('Received exception ', e)
         print('\tConnection Error! Retrying in 2s')
         time.sleep(2)
 
 print("Connected, Rabbitmq is up!")
 print("Disconnecting")
 connection.close()
-
 
 
 class RCSmq():
@@ -65,6 +64,7 @@ class RCSmq():
         self.listenQ = modTLA
 
         self.rpcconnection = pika.BlockingConnection(CON_PARAMS)
+        self.response = None
         self.outconnection = pika.BlockingConnection(CON_PARAMS)
         self.outchannel = self.outconnection.channel()
 
@@ -93,9 +93,9 @@ class RCSmq():
 
     def routeMessage(self, ch, method, props, body):
         """
-        Called by the inchannel consume. Message type is assessed. If not an RPC
-        call, then passed to the callback() which the service can
-        overwrite and handle.
+        Called by the inchannel consume. Message type is assessed.
+        If not an RPC call, then passed to the callback() which the
+        service can overwrite and handle.
 
         Else, passed to rpcHandle()
         """
@@ -121,15 +121,16 @@ class RCSmq():
             on_message_callback=self.rpcResponse,
             auto_ack=True)
 
-        self.response = None
         self.log(5, 'Sending RPC request to ' + routing_key)
-        self.outchannel.basic_publish(exchange='',
-                                      routing_key=routing_key,
-                                      properties=pika.BasicProperties(
-                                        type='rpc',
-                                        reply_to=response_queue,
-                                        ),
-                                      body=json.dumps(body))
+        self.outchannel.basic_publish(
+            exchange='',
+            routing_key=routing_key,
+            properties=pika.BasicProperties(
+                type='rpc',
+                reply_to=response_queue,
+            ),
+            body=json.dumps(body)
+        )
         self.log(5, 'Awaiting RPC response')
         while self.response is None:
             self.rpcconnection.process_data_events()
@@ -157,7 +158,6 @@ class RCSmq():
             response = 'No function called: ' + message['rpc']
         self.pub(props.reply_to, response)
 
-
     def log(self, level, message):
         """
         Logging call to RCS Logging System (RLS) utilising Zej Piascik
@@ -165,11 +165,14 @@ class RCSmq():
         http://telescope.livjm.ac.uk/pmwiki/index.php?n=Main.LoggingStandards
         """
         time = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
-        body = (['log', time + '    ' +
+        body = (
+            [
+                'log', time + '    ' +
                 self.modTLA + '    ' +
                 LOGLEVELS[level] + '    ' +
                 message
-               ])
+            ]
+        )
 
         self.logq.put(body)
 
@@ -191,11 +194,12 @@ class RCSmq():
             elif type == 'tel':
                 properties = pika.BasicProperties(type='tel')
 
-            self.logchannel.basic_publish(exchange='',
-                    routing_key='RLS',
-                    properties=properties,
-                    body=body)
-
+            self.logchannel.basic_publish(
+                exchange='',
+                routing_key='RLS',
+                properties=properties,
+                body=body
+            )
 
     def pub(self, routing_key, body):
         """
