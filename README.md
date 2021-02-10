@@ -1,4 +1,4 @@
-![Pylint](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/Pylint/badge.svg) ![CI Testing](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/CI%20Testing/badge.svg)
+![Flake8](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/Flake8/badge.svg) ![CI Testing](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/CI%20Testing/badge.svg)
 
 # rcs-gsi
 Repository for the Robotic Control System - Generic Services Image repository.
