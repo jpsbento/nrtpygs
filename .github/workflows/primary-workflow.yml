@@ -1,4 +1,4 @@
-name: Primary Workflow
+name: CI Testing
 
 on:
   push:
