@@ -1,0 +1,19 @@
+on: push
+name: Slack Notification Demo
+jobs:
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_CHANNEL: wp-4-github
+        SLACK_COLOR: '#3278BD'
+        SLACK_ICON: https://github.com/newrobotictelescope.png?size=48
+        SLACK_MESSAGE: 'Post Content :rocket:'
+        SLACK_TITLE: Post Title
+        SLACK_USERNAME: nrtbot
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
