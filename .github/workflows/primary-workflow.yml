@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Primary Workflow
 
 on:
   push:
@@ -7,39 +7,37 @@ on:
     branches: [ main ]
 
 jobs:
-  notifyStart:
-    name: Slack Notification
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Slack Notification
+
+    - name: Notify of Start on Slack
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_CHANNEL: wp-4-github
         SLACK_COLOR: '#3278BD'
         SLACK_ICON: https://github.com/newrobotictelescope.png?size=48
+        SLACK_TITLE: Message
         SLACK_MESSAGE: 'Starting CI/CD Tests :rocket:'
-        SLACK_TITLE: Action
+        SLACK_FOOTER: ''
         SLACK_USERNAME: nrtbot
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
     - name: Bring up the gsi and rmq
       run: docker-compose up -d
+
     - name: Run tests on the gsi
       run: docker run gsi pytest
+
     - name: Bring down the system
       run: docker-compose down
+
     - name: Build the Docker image
       run: docker build . --file docker/gsi/Dockerfile --tag gsi:$(date +%s)
 
-  reportResult:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: 8398a7/action-slack@v3
+    - name: Report Result to Slack
+      uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
         fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
