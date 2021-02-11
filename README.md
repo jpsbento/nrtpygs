@@ -15,7 +15,7 @@ This repository contains;
 
 
 ## Usage
-A `secrets.env` file needs to be created and stored in the top level of the dircetory. This needs to contain 4 environment variables as shown below, which setup up a RCS MQ (RMQ) user and password and also a Admin (ADM) user and password which can login to the rabbitmq management interface.
+A `testsecrets.env` file needs to be created and stored in the top level of the dircetory. This needs to contain 4 environment variables as shown below, which setup up a RCS MQ (RMQ) user and password and also a Admin (ADM) user and password which can login to the rabbitmq management interface.
 
 ```
 RMQ_USER=rcs
