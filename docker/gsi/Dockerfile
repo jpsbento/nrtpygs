@@ -38,8 +38,12 @@ USER rcs
 
 # Copy the venv with compile dependencies from the compile-image
 COPY --chown=rcs:rcs --from=compile-image /opt/venv /opt/venv
+
 # Be sure to activate the venv
 ENV PATH="/opt/venv/bin:$PATH"
+
+# Make sure we can import modules in/opt/code
+ENV PYTHONPATH='/opt/code:$PYTHONPATH'
 
 # Copy the code
 COPY --chown=rcs:rcs rcsmq/ /opt/code/
