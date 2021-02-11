@@ -71,8 +71,8 @@ class RCSmq():
         self.logconnection = pika.BlockingConnection(CON_PARAMS)
         self.logchannel = self.logconnection.channel()
         self.logq = Queue(maxsize=20)
-        logThread = threading.Thread(target=self.logPublish)
-        logThread.start()
+        self.logThread = threading.Thread(target=self.logPublish)
+        self.logThread.start()
 
         self.inconnection = pika.BlockingConnection(CON_PARAMS)
         self.inchannel = self.inconnection.channel()
@@ -80,9 +80,13 @@ class RCSmq():
         self.inchannel.basic_consume(queue=self.listenQ,
                                      on_message_callback=self.routeMessage,
                                      auto_ack=True)
-        inThread = threading.Thread(target=self.inchannel.start_consuming,
+        self.inThread = threading.Thread(target=self.inchannel.start_consuming,
                                     args=())
-        inThread.start()
+        self.inThread.start()
+
+    def disconnect(self):
+        self.inThread.join()
+        self.logThread.join()
 
     def callback(self, ch, method, props, body):
         """
