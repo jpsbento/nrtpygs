@@ -1,12 +1,13 @@
 ![Flake8](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/Flake8/badge.svg) ![CI Testing](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/CI%20Testing/badge.svg)
 
 # rcs-gsi
-Repository for the Robotic Control System - Generic Services Image repository.
+Repository for the Robotic Control System - Generic Services Image
 
 This repository contains;
-* rcsmq library for communications with RabbitMQ
-* Dockerfiles and scripts for setting up containers for testing
-* A docker-compose file for bringing up a test system
+* The RabbitMQ definition and setup for the RCS containerised middleware -rmq
+* Code for rcsmq - The python Library for RCS services to communicate with rmq
+* Docker file to create the Genric Services Image which is used for RCS
+servcies - gsi
 
 
 ## Requirements
@@ -15,27 +16,23 @@ This repository contains;
 
 
 ## Usage
-A `testsecrets.env` file needs to be created and stored in the top level of the dircetory. This needs to contain 4 environment variables as shown below, which setup up a RCS MQ (RMQ) user and password and also a Admin (ADM) user and password which can login to the rabbitmq management interface.
-
-```
-RMQ_USER=rcs
-RMQ_PASS=rcs-password
-ADM_USER=rcsadmin
-ADM_PASS=rcsadmin-password
-```
-
-### Starting the system for the first time
-To start the systems the user needs to run (in the project root directory).
-To bring in detached mode add the -d flag;
+A `secrets.env` file needs to be created and stored in the top level of the
+directory. This contains the usernames and passwords for servcies to
+communicate with the rabbitmq server. This file is never tracked and should not
+be uploaded to github.
+For interagtion testing a testsecrets.env is used, so you will need to;
 
 ```shell
-docker-compose up -d
+cp testsecrets.env secrets.env
 ```
 
-This should build and bring up 3 services;
-* gsi - will will exit immediately. Only required to create image.
-* rmq - which will set up the users
-* test-service - which inherits the gsi image and loads the tests
+### Starting rmq
+
+This will start rmq (RCS message queue) server in detatched mode.
+
+```shell
+docker-compose up -d rmq
+```
 
 The rabbitmq server has the ports mapped locally for testing to localhost.
 The management interface can be accessed in a webrowser
@@ -48,6 +45,22 @@ an `RMQ_HOST` environment variable specified in `environment.env`.
 With the RabbitMQ connection port mapped `5672:5672`, test services can also
 be run locally connecting to the RabbitMQ server without having to be within
 the docker bridge network.
+
+### Starting gsi
+
+gsi is specified in the docker compose file to start with a pytest entrypoint.
+This means the container is run once. This will run pytest on the `opt/code/`
+directory, without creating any pytest cache files. Infact this is set up in the
+`docker-compose.yml` to map the local `rcsmq` directory to `opt/code/`. This means
+that code can be modified locally and tested in the container without requiring
+rebuild.
+
+```
+docker-compose up gsi
+```
+
+This command can actually be run on it's own without bringing up rmq, as gsi
+depends on rmq in the `docker-compose.yml`
 
 ### Stopping / Restarting / Bringing Down the system
 This will stop the containers
@@ -66,8 +79,9 @@ docker-compose down
 ```
 
 ### Rebuilding the system
-After making any changes to code (rcsmq and tests), you will need to rebuild
-the containers. This can be done with the following commands.
+After making any changes to anything in the `docker` folder, you will need to
+rebuild the containers for this to take effect. This can be done with the
+following commands.
 
 ```shell
 docker-compose down
@@ -75,6 +89,7 @@ docker-compose build
 docker-compose up -d
 ```
 or with the single command;
+
 ```shell
 docker-compose up --build -d
 ```
@@ -82,3 +97,21 @@ docker-compose up --build -d
 **NOTE** Due to caching, this should only take a couple of seconds as only
 changes to the code in the docker files needs to be made. Downloading of all
 dependencies and their configuration does not need to be repeated.
+
+## Modifying Rabbitmq settings
+rmq is setup via `docker-compose.yml`, using the files in `docker/rmq/`. Here
+there are shell scripts to set up the users. In addition, all settings of the
+rmq server can be specified in `rabbitmq.config` (general server settings)
+and `rmq-definitions.json` (exchange / binding / queue settings).
+See the following for more info - https://www.rabbitmq.com/configure.html
+
+If these settings are changed you need to rebuild the container images.
+
+
+## Workflows
+There are 3 workflows in operation and stored in [.github/workflows/](.githubworkflows)
+* primary-workflow.yml - main testing workflow running pytest on gsi
+* flake8.yml - python linter for rcsmq
+* publish.yml - triggered on release action to push gsi to dockerhub
+
+See [docs/workflows.md](docs/workflows.md) for more info.

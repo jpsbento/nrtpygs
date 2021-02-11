@@ -77,16 +77,21 @@ class RCSmq():
         self.inconnection = pika.BlockingConnection(CON_PARAMS)
         self.inchannel = self.inconnection.channel()
         self.inchannel.queue_declare(queue=self.listenQ)
-        self.inchannel.basic_consume(queue=self.listenQ,
-                                     on_message_callback=self.routeMessage,
-                                     auto_ack=True)
-        self.inThread = threading.Thread(target=self.inchannel.start_consuming,
-                                    args=())
+        self.inchannel.basic_consume(
+            queue=self.listenQ,
+            on_message_callback=self.routeMessage,
+            auto_ack=True)
+        self.inThread = threading.Thread(
+            target=self.inchannel.start_consuming,
+            args=())
         self.inThread.start()
+        print("Initiated Class")
 
     def disconnect(self):
+        print("Bringin in threads")
         self.inThread.join()
         self.logThread.join()
+        print("Threads joined")
 
     def callback(self, ch, method, props, body):
         """

@@ -6,13 +6,13 @@ services:
           - PYTHONDONTWRITEBYTECODE=1
         env_file:
           - environment.env
-          - testsecrets.env
+          - secret.env
         build:
             context: .
             dockerfile: ./docker/gsi/Dockerfile
         image: gsi
         container_name: gsi
-        entrypoint: pytest -p no:cacheprovider
+        entrypoint: pytest -p no:cacheprovider --capture=tee-sys
         volumes:
             - ./rcsmq:/opt/code
         depends_on:
@@ -21,7 +21,7 @@ services:
     rmq:
         env_file:
           - environment.env
-          - testsecrets.env
+          - secret.env
         build:
             context: .
             dockerfile: ./docker/rmq/Dockerfile
