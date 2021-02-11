@@ -28,13 +28,7 @@ jobs:
       run: docker-compose up -d
 
     - name: Run tests on the gsi
-      run: docker run gsi pytest
-
-    - name: Bring down the system
-      run: docker-compose down
-
-    - name: Build the Docker image
-      run: docker build . --file docker/gsi/Dockerfile --tag gsi:$(date +%s)
+      run: docker-compose up gsi
 
     - name: Report Result to Slack
       uses: 8398a7/action-slack@v3
