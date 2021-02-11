@@ -12,7 +12,9 @@ services:
             dockerfile: ./docker/gsi/Dockerfile
         image: gsi
         container_name: gsi
-        command: tail -f /dev/null
+        entrypoint: pytest -p no:cacheprovider
+        volumes:
+            - ./rcsmq:/opt/code
         depends_on:
             - rmq
 
