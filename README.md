@@ -1,5 +1,6 @@
 ![Flake8](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/Flake8/badge.svg) ![CI Testing](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/CI%20Testing/badge.svg) ![Docker Version](https://img.shields.io/docker/v/4mnrt/gsi?label=Docker%20Version&style=plastic) ![Docker Image Size](https://img.shields.io/docker/image-size/4mnrt/gsi?label=Docker%20image%20size&style=plastic)
 
+
 # rcs-gsi
 Repository for the Robotic Control System - Generic Services Image
 
@@ -9,11 +10,12 @@ This repository contains;
 * Docker file to create the Genric Services Image which is used for RCS
 servcies - gsi
 
+## Development workflow
+If you are going to be developing on this repository please see the notes in [docs/dev-worklow.md](docs/dev-worklow.md)
 
 ## Requirements
 * docker
 * docker-compose
-
 
 ## Usage
 A `secrets.env` file needs to be created and stored in the top level of the
@@ -109,9 +111,9 @@ If these settings are changed you need to rebuild the container images.
 
 
 ## Workflows
-There are 3 workflows in operation and stored in [.github/workflows/](.githubworkflows)
+There are 3 workflows in operation and stored in [.github/workflows/](.github/workflows)
 * primary-workflow.yml - main testing workflow running pytest on gsi
 * flake8.yml - python linter for rcsmq
-* publish.yml - triggered on release action to push gsi to dockerhub
+* docker-publish.yml - triggered on release action to push gsi to dockerhub
 
 See [docs/workflows.md](docs/workflows.md) for more info.
