@@ -19,7 +19,7 @@ jobs:
         SLACK_COLOR: '#3278BD'
         SLACK_ICON: https://github.com/newrobotictelescope.png?size=48
         SLACK_TITLE: Message
-        SLACK_MESSAGE: 'Starting CI/CD Tests :rocket:'
+        SLACK_MESSAGE: 'Starting CI/CD Tests'
         SLACK_FOOTER: ''
         SLACK_USERNAME: nrtbot
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
