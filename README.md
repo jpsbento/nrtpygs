@@ -9,6 +9,7 @@ This repository contains;
 * Code for rcsmq - The python Library for RCS services to communicate with rmq
 * Docker file to create the Genric Services Image which is used for RCS
 servcies - gsi
+* Github Actions workflows for automated testing and deployment
 
 ## Development workflow
 If you are going to be developing on this repository please see the notes in [docs/dev-worklow.md](docs/dev-worklow.md)

@@ -25,7 +25,7 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
     - name: Copy testsecrets over
-      run: cp testsecrets.env secrets.env
+      run: cp testsecret.env secrets.env
 
     - name: Run tests on the gsi
       run: docker-compose up gsi
