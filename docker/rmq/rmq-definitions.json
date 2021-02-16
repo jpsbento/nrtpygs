@@ -1,7 +1,7 @@
 {
   "exchanges": [
     {
-      "name": "rmq-telemetry",
+      "name": "rmq.telemetry",
       "vhost": "/",
       "type": "topic",
       "durable": true,
@@ -10,7 +10,7 @@
       "arguments": {}
     },
     {
-      "name": "rmq-direct",
+      "name": "rmq.direct",
       "vhost": "/",
       "type": "direct",
       "durable": true,
