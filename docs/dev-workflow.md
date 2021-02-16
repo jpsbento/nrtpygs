@@ -1,5 +1,45 @@
 # Development Workflow Procedures and Tips
 
+
+## Prerequisites
+Your system must have docker and docker-compose installed.
+
+In addition python3 with Flake8 or other linting tools.
+
+The Github CLI is also usefull to perform github actions. It can be installed
+on Ubuntu systems with the following commands;
+
+```
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+sudo apt-add-repository https://cli.github.com/packages
+sudo apt update
+sudo apt install gh
+```
+
+## Development Tips
+The docker-compose.yml file has a couple of items which make development easier
+
+* The `rmq` container maps the RabbitMQ management and service ports to the
+local machine. This means that you can run local scripts to communicate with
+the `rmq` server without having to be on the container network. Also the
+management web interface is available locally.
+
+* The `gsi` container maps the local `rcsmq/` filesystem into the container.
+This means that any code changes to the `rcsmq/` folder do not require
+rebuilding of the gsi container, just that it is rerun (or maybe not even!)
+
+
+## Branch naming
+Branch names should indicate if it is a bugfix, feature or enhancement
+and use the format below;
+
+```
+bugfix/fix-autoconnect
+feature/add-telemetry
+enhancement/refactor-configuration
+```
+
+## Development Workflow
 The workflow is as follows;
 
 * Clone the repository and create a new development branch (see branch naming)
@@ -49,43 +89,15 @@ http://github.com/owner/repo/pull/1
 ~/Projects/my-project$
 ```
 
-* Create new release to trigger pushing to Dockerhub
+The following steps should be performed by an authorised person;
 
+* Resolve the pull request
+
+* Create new release to trigger pushing to Dockerhub
 Do this on github or with the github CLI. The tag name **MUST** be numeric
 only, with decimal places allowed. `1.13` is valid `v1.21` is **not valid**
-
 ```
 gh release create <tag>
 ```
 
-
-## Branch naming
-Branch names should indicate if it is a bugfix, feature or enhancement
-and use the format below;
-
-```
-bugfix/fix-autoconnect
-feature/add-telemetry
-enhancement/refactor-configuration
-```
-
-## Development Tips
-The docker-compose.yml file has a couple of items which make development easier
-
-* The `rmq` container maps the RabbitMQ management and service ports to the
-local machine. This means that you can run local scripts to communicate with the
-rmq server without having to be on the container network. Also the management
-web interface is available locally.
-
-* The `gsi` container maps the local `rcsmq/` filesystem into the container.
-This means that
-
-
-
-## Local Tests
-
-
-## Commit to Github
-
-
-## Create a Release
+* Check on Dockerhub that the release has worked,
