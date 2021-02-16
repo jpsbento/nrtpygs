@@ -15,6 +15,9 @@ sudo apt-add-repository https://cli.github.com/packages
 sudo apt update
 sudo apt install gh
 ```
+Instructions for the gh CLI can be found here;
+https://cli.github.com/manual/index
+
 
 ## Development Tips
 The docker-compose.yml file has a couple of items which make development easier
@@ -92,6 +95,11 @@ http://github.com/owner/repo/pull/1
 The following steps should be performed by an authorised person;
 
 * Resolve the pull request
+```
+gh pr list
+gh pr merge [<number> | <branch>]
+```
+
 
 * Create new release to trigger pushing to Dockerhub
 Do this on github or with the github CLI. The tag name **MUST** be numeric
@@ -100,4 +108,4 @@ only, with decimal places allowed. `1.13` is valid `v1.21` is **not valid**
 gh release create <tag>
 ```
 
-* Check on Dockerhub that the release has worked,
+* Check on Dockerhub that the release has worked!
