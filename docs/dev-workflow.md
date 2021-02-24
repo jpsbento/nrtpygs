@@ -49,6 +49,7 @@ The workflow is as follows;
 ```shell
 git clone https://github.com/newrobotictelescope/rcs-gsi
 cd rcs-gsi
+cp testsecret.env secret.env
 git checkout -b <branch-name>
 ```
 
@@ -82,7 +83,7 @@ git push origin <branch-name>
 ```
 
 * Create a pull request either on github or using the github CLI tool;
-```
+```shell
 # Create a pull request interactively
 ~/Projects/my-project$ gh pr create
 Creating pull request for feature-branch into main in owner/repo
@@ -92,19 +93,32 @@ http://github.com/owner/repo/pull/1
 ~/Projects/my-project$
 ```
 
-The following steps should be performed by an authorised person;
+* At this point you can revert back to the main branch and update to the latest
+version. Then you're set to rebranch the next feature, bugfix or enhancement!
+Alternatively, you can remove the whole rcs-gsi folder and reclone if required.
+```
+git checkout main
+git pull origin main
+```
+
+The following steps should be performed by an **authorised person only**;
 
 * Resolve the pull request
-```
+
+```shell
+
 gh pr list
 gh pr merge [<number> | <branch>]
 ```
 
 
+** The above happen in loops until a release needs to be made **
+
+
 * Create new release to trigger pushing to Dockerhub
 Do this on github or with the github CLI. The tag name **MUST** be numeric
 only, with decimal places allowed. `1.13` is valid `v1.21` is **not valid**
-```
+```shell
 gh release create <tag>
 ```
 
