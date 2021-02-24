@@ -75,7 +75,7 @@ CI/CD tasks are run informing of the outcome of the Workflow run.
 ### docker-release.yml
 A release action triggered on a release type of `Publish`. This will build
 the `gsi` and the `rmq` container and push it to dockerhub tagging both with
-`gsi:$release_number` ~ `gsi:latest` and `rcq:$release_number` ~ `rcq:latest`
+`gsi:$release_number` ~ `gsi:latest` and `rmq:$release_number` ~ `rmq:latest`
 
 See [dev-workflow.md](dev-workflow.md) for the release procedure.
 
