@@ -19,14 +19,14 @@ If you are going to be developing on this repository please see the notes in [do
 * docker-compose
 
 ## Usage
-A `secrets.env` file needs to be created and stored in the top level of the
+A `secret.env` file needs to be created and stored in the top level of the
 directory. This contains the usernames and passwords for servcies to
 communicate with the rabbitmq server. This file is never tracked and should not
 be uploaded to github.
 For interagtion testing a testsecrets.env is used, so you will need to;
 
 ```shell
-cp testsecrets.env secrets.env
+cp testsecret.env secrets.env
 ```
 
 ### Starting rmq

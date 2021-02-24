@@ -104,12 +104,16 @@ git pull origin main
 The following steps should be performed by an **authorised person only**;
 
 * Resolve the pull request
+
 ```shell
+
 gh pr list
 gh pr merge [<number> | <branch>]
 ```
 
+
 ** The above happen in loops until a release needs to be made **
+
 
 * Create new release to trigger pushing to Dockerhub
 Do this on github or with the github CLI. The tag name **MUST** be numeric

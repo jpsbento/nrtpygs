@@ -8,7 +8,7 @@ For information of how the CI/CD workflow is used see
 
 ## Github secrets
 These workflows require secrets to be setup for communication with Slack and
-for pushing images to Dockerhub. These can be viewed (but there value hidden)
+for pushing images to Dockerhub. These can be viewed (but their value hidden)
 in the repository Settings Tab. These may have been extended but at the start
 there are;
 * Dockerhub Username (Doug Arnold's account)
@@ -29,7 +29,7 @@ tasks to run always).
 Refactoring message will result in a non-zero exit code, and thus fail the
 entire run. For this reason we are using Flake8 as a linter.
 
-Workflows can be enabled and disabled vis the Actions Tab. A Shield can also be
+Workflows can be enabled and disabled via the Actions Tab. A Shield can also be
 generated to show whether the Workflow is passing or not. Click on a Workflow
 and these options are available in the extras (dots) button by the search bar.
 
@@ -44,8 +44,8 @@ username and password. Passwords however are becoming depreciated, so you will
 need to enable an access token in your account settings (Account Settings -->
 Developer Access Settings --> Personal Access Token), to allow Workflow access.
 
-**Issue** - I (Doug Arnold) have allowed the Personal Access Token
-authentication, and it allows me to push commits with Modified Workflows,
+**Issue** - Despite allowing the Personal Access Token workflow priviledges, 
+it allows me to push commits with Modified Workflows,
 however after a number of pushes / timeout it reverts to rejecting the pushes
 again, meaning I need to forget the token and reapply it. Infuriating!
 
@@ -74,8 +74,8 @@ CI/CD tasks are run informing of the outcome of the Workflow run.
 
 ### docker-release.yml
 A release action triggered on a release type of `Publish`. This will build
-the `gsi` container and push it to dockerhub tagging both with
-`gsi:$release_number` and `gsi:latest`
+the `gsi` and the `rmq` container and push it to dockerhub tagging both with
+`gsi:$release_number` ~ `gsi:latest` and `rmq:$release_number` ~ `rmq:latest`
 
 See [dev-workflow.md](dev-workflow.md) for the release procedure.
 
