@@ -12,19 +12,7 @@ CREDENTIALS = pika.PlainCredentials(
     os.environ['RMQ_USER'], os.environ['RMQ_PASS']
     )
 
-CON_PARAMS = pika.ConnectionParameters(
-    host=os.environ['RMQ_HOST'],
-    credentials=CREDENTIALS,
-    )
-
-LOGLEVELS = {
-    0: 'CRT',
-    1: 'SYS',
-    2: 'ERR',
-    3: 'WRN',
-    4: 'INF',
-    5: 'DBG',
-}
+rmq
 
 
 # A test blocking loop to wait for Rabbitmq to come up when loading module
@@ -62,10 +50,11 @@ class RCSmq():
         """
         self.modTLA = modTLA
         self.listenQ = modTLA
-
         self.rpcconnection = pika.BlockingConnection(CON_PARAMS)
         self.response = None
-        self.outconnection = pika.BlockingConnection(CON_PARAMS)
+        self.outconnection = pika.BlockingConnection(
+            CON_PARAMS,
+            on_close_callback=reconnect)
         self.outchannel = self.outconnection.channel()
 
         self.logconnection = pika.BlockingConnection(CON_PARAMS)
