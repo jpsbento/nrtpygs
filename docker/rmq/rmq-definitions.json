@@ -17,6 +17,15 @@
       "auto_delete": false,
       "internal": false,
       "arguments": {}
+    },
+    {
+      "name": "rmq.logging",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
     }
   ]
 }
