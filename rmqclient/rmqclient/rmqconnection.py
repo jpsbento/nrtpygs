@@ -1,57 +1,74 @@
 import pika
 import logging as log
 import os
-from pika.adapters.asyncio_connection import AsyncioConnection
 import time
 import threading
+import rmqsettings as settings
+import code
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
     os.environ['RMQ_USER'], os.environ['RMQ_PASS']
     )
 
-CON_PARAMS = pika.ConnectionParameters(
-    host=os.environ['RMQ_HOST'],
-    credentials=CREDENTIALS,
-    )
+RMQ_HOST = os.environ['RMQ_HOST']
 
-log.getLogger("pika").setLevel(logging.WARNING)
-
+# Turn off pika info and Debug Level logging
+log.getLogger('pika').setLevel(settings.PIKA_LOGLEVEL)
 log.basicConfig(
-    filename='rcsmq.log',
-    level=log.INFO,
-    format='%(asctime)s: %(levelname)s: %(message)s')
+    filename=settings.RMQ_LOGFILE,
+    level=settings.RMQ_LOGLEVEL,
+    format='%(asctime)s: %(name)s: %(levelname)s: %(message)s')
+
+log = log.getLogger(__name__)
 
 class RmqConnection():
     """
     Class to provide connection and new channel options to the rmq server
     """
 
-    def __init__(self):
-        self._connection = None
+    def __init__(self, name):
         self._stopping = False
+        self.new_channel = None
+        self.connection_name = name
+
+
 
     def connect(self):
         """
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
-        log.info('Connecting to %s', CON_PARAMS.host)
-        self._connection = pika.SelectConnection(
-            CON_PARAMS,
+        parameters = pika.ConnectionParameters(
+            host=RMQ_HOST,
+            credentials=CREDENTIALS,
+            client_properties={
+                'connection_name': self.connection_name,
+            },)
+
+        self.connection = pika.SelectConnection(
+            parameters=parameters,
             on_open_callback=self.on_connection_open,
             on_open_error_callback=self.on_connection_open_error,
             on_close_callback=self.on_connection_closed)
 
+        log.info('Connecting to %s', parameters.host)
         self.iothread = threading.Thread(
-            target=self._connection.ioloop.start,
+            target=self.connection.ioloop.start,
             args=())
         self.iothread.start()
-        return self._connection
+        # Wait to allow connection to open before returning
+        while not self.connection.is_open:
+            pass
+        log.debug('Connection open')
+        return self.connection
+
+    def getconnection(self):
+        return self.connection
 
     def on_connection_open(self, _unused_connection):
         log.info('Connection opened')
-        pass
+        return
 
     def on_connection_open_error(self, _unused_connection, err):
         """This method is called by pika if the connection to RabbitMQ
@@ -62,7 +79,8 @@ class RmqConnection():
 
         """
         log.error('Connection open failed, reopening in 5 seconds: %s', err)
-        self._connection.ioloop.call_later(5, self.connect)
+        self.connection.ioloop.call_later(5, self.connect)
+        return
 
     def on_connection_closed(self, _unused_connection, reason):
         """This method is invoked by pika when the connection to RabbitMQ is
@@ -75,11 +93,11 @@ class RmqConnection():
 
         """
         if self._stopping:
-            self._connection.ioloop.stop()
+            self.connection.ioloop.stop()
         else:
             log.warning('Connection closed, reopening in 5 seconds: %s',
                            reason)
-            self._connection.ioloop.call_later(5, self.connect)
+            self.connection.ioloop.call_later(5, self.connect)
 
     def close(self):
         """Stop the example by closing the channel and connection. We
@@ -92,20 +110,22 @@ class RmqConnection():
         """
         log.info('Closing Connection')
         self._stopping = True
-        if self._connection is not None:
+        if self.connection is not None:
             log.info('Closing connection')
-            self._connection.close()
-            self._connection = None
+            self.connection.close()
+            self.connection = None
 
-    def create_channel(self, queue_number=None):
+    def create_channel(self, channel_number=None):
         """
-        Create a queue on the connection and return the Queue
-        Object
+        Create a channel on the connection. Once open return the channel object
         """
 
-        new_channel = self._connection.channel(on_open_callback=self.on_channel_open)
-        new_channel.add_on_close_callback(self.on_channel_closed)
-        return new_channel
+        self.new_channel = self.connection.channel(on_open_callback=self.on_channel_open)
+        self.new_channel.add_on_close_callback(self.on_channel_closed)
+        # Wait for channel to open before returning
+        while not self.new_channel.is_open:
+            pass
+        return self.new_channel
 
     def on_channel_open(self, channel):
         """This method is invoked by pika when the channel has been opened.
@@ -134,16 +154,13 @@ class RmqConnection():
 
 def main():
     """
-    Used for an expample of how connection table palce and how channels communicate
+    Used for an example of how connection takes palce and how to send a message
     TODO: Make it as an end to end test
     """
 
     connection = RmqConnection()
     connection.connect()
-    connection.createChannel()
-
-
-    print ("We never get here until the connect() method returns")
+    channel = connection.create_channel()
 
 if __name__ == '__main__':
     main()

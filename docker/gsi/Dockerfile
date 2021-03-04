@@ -46,7 +46,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONPATH='/opt/code:$PYTHONPATH'
 
 # Copy the code
-COPY --chown=rcs:rcs rcsmq/ /opt/code/
+COPY --chown=rcs:rcs rmqclient/ /opt/code/
 
 # Set working directory
 WORKDIR /opt/code

@@ -125,6 +125,7 @@ gh pr list
 gh pr merge [<number> | <branch>]
 ```
 
+**NOTE** choose to delete the bracnh once the pull request has been approved and it has been merged onto the main development branch
 
 ** The above happen in loops until a release needs to be made **
 
