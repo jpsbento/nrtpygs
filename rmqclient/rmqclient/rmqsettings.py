@@ -3,7 +3,7 @@ import logging as log
 
 PIKA_LOGLEVEL = log.WARN
 RMQ_LOGLEVEL = log.DEBUG
-RMQ_LOGFILE = 'rmq.log'
+RMQ_LOGFILE = 'rmqclient.log'
 
 # settings for the rmqmodule
 TLA = os.environ['SER_TLA']

@@ -1,4 +1,5 @@
 import pika
+
 import logging as log
 import os
 import time
@@ -20,7 +21,7 @@ log.basicConfig(
     level=settings.RMQ_LOGLEVEL,
     format='%(asctime)s: %(name)s: %(levelname)s: %(message)s')
 
-log = log.getLogger(__name__)
+#log = log.getLogger(__name__)
 
 class RmqConnection():
     """
@@ -30,9 +31,7 @@ class RmqConnection():
     def __init__(self, name):
         self._stopping = False
         self.new_channel = None
-        self.connection_name = name
-
-
+        self.connection_name = settings.TLA + '.' + name
 
     def connect(self):
         """
@@ -63,7 +62,7 @@ class RmqConnection():
         log.debug('Connection open')
         return self.connection
 
-    def getconnection(self):
+    def get_connection(self):
         return self.connection
 
     def on_connection_open(self, _unused_connection):
@@ -115,13 +114,29 @@ class RmqConnection():
             self.connection.close()
             self.connection = None
 
-    def create_channel(self, channel_number=None):
+    def create_channel(self, channel_number=None, on_close_callback=None):
         """
         Create a channel on the connection. Once open return the channel object
+
+        on_close_callback can be specified to handle disconnections of
+        the channel in a graceful way with your own function.
+
+        It MUST accept the same arguments as self.on_channel_closed()  e.g.
+        def on_close_callback_method(self, channel, reason)
+
+        If a custom function is specified (i.e. for reconnection) it should
+        check if the connection class is stopping and if so,
+        not attempt reconnection and exit gracfully.
         """
 
+        if on_close_callback:
+            log.debug('The channel on_close_callback is has been overloaded')
+        else:
+            log.debug('The channel on_close_callback is default to RmqConnection')
+            on_close_callback = self.on_channel_closed
+
         self.new_channel = self.connection.channel(on_open_callback=self.on_channel_open)
-        self.new_channel.add_on_close_callback(self.on_channel_closed)
+        self.new_channel.add_on_close_callback(on_close_callback)
         # Wait for channel to open before returning
         while not self.new_channel.is_open:
             pass

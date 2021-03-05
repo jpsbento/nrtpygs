@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import pika
 from rmqconnection import RmqConnection
@@ -5,6 +6,7 @@ from queue import Queue
 import json
 import time
 import threading
+import rmqsettings as settings
 
 import logging as log
 
@@ -25,54 +27,95 @@ class RmqConsume():
     """
 
     def __init__(self):
-        self._connection = RmqConnection('Consume')
+        self._connection = RmqConnection('rmqconsumer')
         self._connection.connect()
+        self._consumers = []
 
     def consume(self, exchange, binding_keys, queue_name, callback):
+        #Set the queuename to hold the service TLA prefix
+        new_consumer = RmqConsumer(
+            self._connection,
+            exchange,
+            binding_keys,
+            queue_name,
+            callback
+        )
+
+        self._consumers.append(new_consumer)
+
+    def get_consumers(self):
+        return self._consumers
+
+
+class RmqConsumer():
+    """
+    The class for holding information on an individual consumer
+    """
+
+    def __init__(self, connection, exchange, binding_keys, queue_name, callback):
+        self._rmqconnection = connection
+        self._connection = self._rmqconnection.get_connection()
+        self._channel = None
+        self._exchange = exchange
+        self._binding_keys = binding_keys
+        queue_prefix = settings.TLA + '.'
+        self._queue_name = queue_prefix + queue_name
+        self._callback = callback
+        self._setup_consume()
+
+    def _setup_consume(self):
         self._create_channel()
-        self._create_queue(queue_name)
-        self._setup_bindings(exchange, queue_name, binding_keys)
-        self._consume(queue_name, callback)
+        self._create_queue()
+        self._setup_bindings()
+        self._consume()
 
     def _create_channel(self):
-        self._channel = self._connection.create_channel()
+        self._channel = self._rmqconnection.create_channel()
 
-    def _create_queue(self, queue_name):
-        log.debug('Creating queue {}'.format(queue_name))
-        self._channel.queue_declare(queue=queue_name, exclusive=True)
+    def _create_queue(self):
+        log.debug('Creating queue {}'.format(self._queue_name))
+        self._channel.queue_declare(
+            queue=self._queue_name,
+            durable=True,
+        )
 
-    def _setup_bindings(self, exchange, queue_name, binding_keys):
-        for binding_key in binding_keys:
+    def _setup_bindings(self):
+        for binding_key in self._binding_keys:
             self._channel.queue_bind(
-                exchange=exchange,
-                queue=queue_name,
+                exchange=self._exchange,
+                queue=self._queue_name,
                 routing_key=binding_key
             )
 
-    def _consume(self, queue, callback):
-        # we set the basic consume and set the callback, however as
+    def _consume(self):
+        """
+        We set the basic consume and set the callback,
+        Being asyncronous we don't need a
+        pika.Channel.start_consuming() method
+        """
         self._channel.basic_consume(
-            queue=queue,
-            on_message_callback=callback,
+            queue=self._queue_name,
+            on_message_callback=self._callback,
             auto_ack=True
         )
 
 
-
 def main():
     """
-    Used for an example of how consuming takes palce and how to send a message
+    Used for an example of how consuming takes place and how to send a message
     TODO: Make it as an end to end test?
     """
 
     consume=RmqConsume()
 
     def msgcallback(ch, method, properties, body):
-        print('Message Received:')
-        print(body)
+        if not msgs_received:
+            msgs_received = 0
+        msgs_received += 1
+        if msgs_received%100:
+            print (msgs_reecieved, 'messages have been received')
 
-    consume.consume('rmq.logging', ['#'], 'test_queue', msgcallback)
-    consume.consume('rmq.logging', ['#'], 'test_queue2', msgcallback)
+    consume.consume('rmq.logging', ['#'], 'all_queue', msgcallback)
 
 if __name__ == '__main__':
     main()

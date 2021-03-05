@@ -13,7 +13,7 @@ class RmqLogging():
     def __init__(self):
         self._stopping = False
         log.debug('Initiating class')
-        self._rmqconnection = RmqConnection('RmqLogger')
+        self._rmqconnection = RmqConnection('rmqlogger')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.create_channel()
         self.logq = Queue(maxsize=settings.LOGQ_MAX_SIZE)
@@ -31,7 +31,7 @@ class RmqLogging():
             'level': settings.LOGLEVELS[level],
             'message': message,
         }
-        self.logq.put(body)
+        self._publish_message(body)
 
     def disconnect(self):
         self._stopping = True
@@ -52,7 +52,7 @@ class RmqLogging():
         log.debug('Waiting on connection to reopen')
 
         while not self._connection.is_open:
-            self._connection = self._rmqconnection.getconnection()
+            self._connection = self._rmqconnection.get_connection()
 
         log.debug('Connection is open again, recreating channel')
         self._channel = self._rmqconnection.create_channel()
@@ -63,9 +63,16 @@ class RmqLogging():
         """
         log.debug('Starting publish message loop')
         while not self._stopping:
-            log.debug('In Loop')
             # Block until a message body is available
             body = self.logq.get(block=True, timeout=None)
+            if self.logq.qsize()>10000:
+                print ("more than 10000 messages in queue")
+            elif self.logq.qsize()>1000:
+                print ("more than 1000 messages in queue")
+            elif self.logq.qsize()>100:
+                print ("more than 100 messages in queue")
+            elif self.logq.qsize()>50:
+                print ("more than 50 messages in queue")
             # Publish the message on the log connection
             self._publish_message(body)
 
@@ -98,13 +105,9 @@ def main():
     Used for an example of how logging can be used
     TODO: Make it as an end to end test?
     """
-    x = 10
 
-    for i in range(x):
-        log.debug('Sending Message train {} of {}'.format(i,x))
-        rmqlogging.log(1, 'This is a debug log' + str(i))
-        time.sleep(1)
-
+    while True:
+        rmqlogging.log(1, 'This is a debug log')
     rmqlogging.disconnect()
 
 
