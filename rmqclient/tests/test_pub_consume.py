@@ -1,5 +1,4 @@
 import time
-from rmqclient.rmqlogging import RmqLogging
 from rmqclient.rmqlogging import rmqlog
 from rmqclient.rmqconsume import RmqConsume
 
@@ -9,7 +8,7 @@ class CountMessages():
         self.messages = 0
 
     def callback(self, ch, method, props, body):
-        self.messages +=1
+        self.messages += 1
 
 
 def publish_100_logs():

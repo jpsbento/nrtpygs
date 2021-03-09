@@ -113,7 +113,6 @@ class RmqConsumer():
         )
 
 
-
 class ExampleConsume():
 
     def __init__(self):
@@ -122,18 +121,19 @@ class ExampleConsume():
         consume.consume('rmq.logging', ['#'], 'test_queue', self.msgcallback)
 
     def msgcallback(self, ch, method, props, body):
-        self._msgs_received +=1
+        self._msgs_received += 1
         if self._msgs_received % 100 == 0:
             print('Messages received', self._msgs_received)
 
 
 def main():
     """
-    This triggers the ExampleConsume class, which shows how the consume callback
-    can be used within a Class structure interacting with Class members
+    This triggers the ExampleConsume class, which shows how the consume
+    callback can be used within a Class structure interacting with
+    Class members
     """
-
     ExampleConsume()
+
 
 if __name__ == '__main__':
     main()
