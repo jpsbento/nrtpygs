@@ -28,7 +28,7 @@ def consume_100_logs():
         'LOG.complete',
         counter.callback)
 
-    # Allow time for messages to be consumed
+    # Allow time for messages to be consumed.
     time.sleep(3)
     consume.disconnect()
     assert counter.messages == 100
