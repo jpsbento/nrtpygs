@@ -104,7 +104,7 @@ class RmqTelemetry():
                     break
             if self._stopping:
                 break
-                
+
             body = self._telq.get(block=True, timeout=None)[1]
             self._publish_message(body)
 

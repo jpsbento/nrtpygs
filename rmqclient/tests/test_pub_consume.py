@@ -33,6 +33,7 @@ def consume_100_logs():
     consume.disconnect()
     assert counter.messages == 100
 
+
 def test_pub_consume():
     publish_100_logs()
     consume_100_logs()
