@@ -1,5 +1,6 @@
-from rmqconnection import RmqConnection
-import rmqsettings as settings
+import re
+from rmqclient.rmqconnection import RmqConnection
+import rmqclient.rmqsettings as settings
 import logging as log
 
 
@@ -7,7 +8,12 @@ class RmqConsume():
     """
     Class to allow clients to subscribe to messages. On initiation the class
     will create a connection. At that point a client can setup multiple
-    consuming queues.
+    consumers using this connection. Each consumer has one queue, but can
+    specify multiple binding keys.
+
+    A new RmqConsumer object is created each time consume is called and stored
+    This is required for future ability for consumers to detect when a channel
+    has closed and to reopen it by suppliying an on channel closed callback.
 
     The client needs to specify the paramaters in the consume method
     Namely
@@ -37,6 +43,9 @@ class RmqConsume():
     def get_consumers(self):
         return self._consumers
 
+    def disconnect(self):
+        self._connection.close()
+
 
 class RmqConsumer():
     """
@@ -50,8 +59,10 @@ class RmqConsumer():
         self._channel = None
         self._exchange = exchange
         self._binding_keys = binding_keys
-        queue_prefix = settings.TLA + '.'
-        self._queue_name = queue_prefix + queue_name
+        if not re.search(r'^[A-Z]{3}', queue_name):
+            print('TLA not specified')
+            queue_name = settings.TLA + '.' + queue_name
+        self._queue_name = queue_name
         self._callback = callback
         self._setup_consume()
 

@@ -123,7 +123,6 @@ class RmqTelemetry():
         priority = 4 - settings.TEL_PRIORITIES[body['type']]
         TelProperties = settings.TEL_PROPERTIES
         TelProperties.priority = priority
-        print('Sending message with priority', priority)
         while not message_sent:
             try:
                 self._channel.basic_publish(

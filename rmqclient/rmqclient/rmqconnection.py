@@ -2,7 +2,7 @@ import pika
 import logging as log
 import os
 import threading
-import rmqsettings as settings
+import rmqclient.rmqsettings as settings
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
@@ -136,7 +136,10 @@ class RmqConnection():
         """
         Invoked by pika when RabbitMQ unexpectedly closes the channel.
         """
-        log.warning('Channel %i was closed: %s', channel, reason)
+        if not self._stopping:
+            log.warning('Channel %i was closed: %s', channel, reason)
+        else:
+            log.info('Channel %i was closed: %s', channel, reason)
 
 
 def main():

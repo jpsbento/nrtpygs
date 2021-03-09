@@ -1,13 +1,13 @@
 import datetime
 import pika
-from rmqconnection import RmqConnection
+from rmqclient.rmqconnection import RmqConnection
 import logging as log
 from queue import Queue
 import json
 import time
 import threading
 
-import rmqsettings as settings
+import rmqclient.rmqsettings as settings
 
 
 class RmqLogging():
@@ -40,8 +40,12 @@ class RmqLogging():
         self._logq.put(body)
 
     def disconnect(self):
-        print('Disconnecting')
         self._stopping = True
+        # Wait for all messages to be sent
+
+        # Allow extra time for last message
+        time.sleep(1)
+        # Close the connection and rejoin the log thread
         self._rmqconnection.close()
         self._logThread.join()
 
