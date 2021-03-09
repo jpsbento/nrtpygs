@@ -68,26 +68,19 @@ class RmqConnection():
         return
 
     def on_connection_open_error(self, _unused_connection, err):
-        """This method is called by pika if the connection to RabbitMQ
-        can't be established.
-
-        :param pika.SelectConnection _unused_connection: The connection
-        :param Exception err: The error
-
         """
-        log.error('Connection open failed, reopening in 5 seconds: %s', err)
-        self.connection.ioloop.call_later(1, self.connect)
+        This method is called by pika if the connection to RabbitMQ
+        can't be established.
+        """
+        log.error('Connection open failed, trying again in 3 seconds: %s', err)
+        self.connection.ioloop.call_later(3, self.connect)
         return
 
     def on_connection_closed(self, _unused_connection, reason):
-        """This method is invoked by pika when the connection to RabbitMQ is
-        closed unexpectedly. Since it is unexpected, we will reconnect to
+        """
+        This method is invoked by pika when the connection to RabbitMQ is
+        closed unexpectedly. If it is unexpected, we will reconnect to
         RabbitMQ if it disconnects.
-
-        :param pika.connection.Connection connection: The closed connection obj
-        :param Exception reason: exception representing reason for loss of
-            connection.
-
         """
         if self._stopping:
             log.info('Connection closed by user')
@@ -100,14 +93,6 @@ class RmqConnection():
             self.connection.ioloop.call_later(1, self.connect)
 
     def close(self):
-        """Stop the example by closing the channel and connection. We
-        set a flag here so that we stop scheduling new messages to be
-        published. The IOLoop is started because this method is
-        invoked by the Try/Catch below when KeyboardInterrupt is caught.
-        Starting the IOLoop again will allow the publisher to cleanly
-        disconnect from RabbitMQ.
-
-        """
         log.info('Closing Connection')
         self._stopping = True
         if self.connection is not None:
@@ -145,33 +130,18 @@ class RmqConnection():
         return self.new_channel
 
     def on_channel_open(self, channel):
-        """This method is invoked by pika when the channel has been opened.
-        The channel object is passed in so we can make use of it.
-
-        Since the channel is now open, we'll declare the exchange to use.
-
-        :param pika.channel.Channel channel: The channel object
-
-        """
         log.info('Channel opened')
 
     def on_channel_closed(self, channel, reason):
-        """Invoked by pika when RabbitMQ unexpectedly closes the channel.
-        Channels are usually closed if you attempt to do something that
-        violates the protocol, such as re-declare an exchange or queue with
-        different parameters. In this case, we'll close the connection
-        to shutdown the object.
-
-        :param pika.channel.Channel: The closed channel
-        :param Exception reason: why the channel was closed
-
+        """
+        Invoked by pika when RabbitMQ unexpectedly closes the channel.
         """
         log.warning('Channel %i was closed: %s', channel, reason)
 
 
 def main():
     """
-    Used for an example of how connection takes palce and how to send a message
+    Used for an example of how connection takes place and how to send a message
     TODO: Make it as an end to end test
 
     NOTE: A numebr of OS environment variables need to be set for a successful
