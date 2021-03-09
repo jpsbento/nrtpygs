@@ -97,6 +97,9 @@ class RmqConnection():
         self._stopping = True
         if self.connection is not None:
             self.connection.close()
+        # Block until connection closes
+        while self.connection.is_open:
+            pass
 
     def create_channel(self, channel_number=None, on_close_callback=None):
         """
