@@ -67,11 +67,10 @@ class RmqTelemetry():
         self._telq.put((settings.TEL_PRIORITIES[body['type']], body))
 
     def disconnect(self):
-        print('Disconnecting')
         self._stopping = True
         self._rmqconnection.close()
         time.sleep(0.1)
-        # self._telThread.join()
+        self._telThread.join()
 
     def _recreate_channel(self):
         """
@@ -102,13 +101,10 @@ class RmqTelemetry():
             # Could raise an exception perhaps?
             while self._telq.empty():
                 if self._stopping:
-                    print("Stopping!")
                     break
-                pass
-
             if self._stopping:
-                print("Stopping!")
                 break
+                
             body = self._telq.get(block=True, timeout=None)[1]
             self._publish_message(body)
 

@@ -44,7 +44,7 @@ class RmqLogging():
         # Wait for all messages to be sent
 
         # Allow extra time for last message
-        time.sleep(1)
+        time.sleep(5)
         # Close the connection and rejoin the log thread
         self._rmqconnection.close()
         self._logThread.join()
@@ -71,7 +71,6 @@ class RmqLogging():
         """
         Single thread function to read logq and publish log messages
         """
-        log.debug('Starting publish message loop')
         while not self._stopping:
             # Block until a message body is available
             # TODO: Tidy up the double breaks.
@@ -79,12 +78,12 @@ class RmqLogging():
             while self._logq.empty():
                 if self._stopping:
                     break
-                pass
             if self._stopping:
+                print("Stopping logging")
                 break
 
             self._sent += 1
-            if self._sent % 100 == 0:
+            if self._sent % 1000 == 0:
                 log.debug('Published {} messages. Queuesize is {}'
                           .format(self._sent, self._logq.qsize()))
 
