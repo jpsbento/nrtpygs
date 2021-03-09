@@ -1,0 +1,19 @@
+name: CI Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Copy testsecrets over
+      run: cp testsecret.env secret.env
+
+    - name: Run tests on the gsi
+      run: docker-compose up gsi
