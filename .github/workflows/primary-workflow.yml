@@ -27,9 +27,11 @@ jobs:
     - name: Copy testsecrets over
       run: cp testsecret.env secret.env
 
-    - name: Run tests on the gsi
+    - name: Bring up rmq service
       run: docker-compose up -d rmq
-      run: docker-compose up gsi
+
+    - name: Run tests on the gsi
+      run: docker-compose run gsi
 
     - name: Report Result to Slack
       uses: 8398a7/action-slack@v3
