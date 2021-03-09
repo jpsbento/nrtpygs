@@ -12,7 +12,7 @@ class CountMessages():
 
 
 def publish_100_logs():
-    for i in range(1, 10):
+    for i in range(1, 101):
         rmqlog.log(3, 'This is warning log number {}'.format(i))
         time.sleep(0.05)
     time.sleep(1)
@@ -37,3 +37,4 @@ def consume_100_logs():
 def test_pub_consume():
     publish_100_logs()
     consume_100_logs()
+    time.sleep(15)

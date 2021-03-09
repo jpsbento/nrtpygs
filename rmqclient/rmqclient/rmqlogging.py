@@ -79,7 +79,6 @@ class RmqLogging():
                 if self._stopping:
                     break
             if self._stopping:
-                print("Stopping logging")
                 break
 
             self._sent += 1
