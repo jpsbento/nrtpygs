@@ -33,7 +33,9 @@ def consume_100_logs():
     consume.disconnect()
     assert counter.messages == 100
 
-
 def test_pub_consume():
     publish_100_logs()
     consume_100_logs()
+    # The test was hanging in github actions. This is horrible, but seems some
+    # threads that close locally were not closing in github
+    exit()
