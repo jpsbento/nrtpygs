@@ -1,11 +1,8 @@
 import pika
-
 import logging as log
 import os
-import time
 import threading
 import rmqsettings as settings
-import code
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
@@ -21,7 +18,9 @@ log.basicConfig(
     level=settings.RMQ_LOGLEVEL,
     format='%(asctime)s: %(name)s: %(levelname)s: %(message)s')
 
-#log = log.getLogger(__name__)
+# TODO: Test what this does!
+log = log.getLogger(__name__)
+
 
 class RmqConnection():
     """
@@ -59,7 +58,6 @@ class RmqConnection():
         # Wait to allow connection to open before returning
         while not self.connection.is_open:
             pass
-        log.debug('Connection open')
         return self.connection
 
     def get_connection(self):
@@ -78,7 +76,7 @@ class RmqConnection():
 
         """
         log.error('Connection open failed, reopening in 5 seconds: %s', err)
-        self.connection.ioloop.call_later(5, self.connect)
+        self.connection.ioloop.call_later(1, self.connect)
         return
 
     def on_connection_closed(self, _unused_connection, reason):
@@ -92,11 +90,14 @@ class RmqConnection():
 
         """
         if self._stopping:
+            log.info('Connection closed by user')
             self.connection.ioloop.stop()
+            self.connection = None
         else:
-            log.warning('Connection closed, reopening in 5 seconds: %s',
-                           reason)
-            self.connection.ioloop.call_later(5, self.connect)
+            log.warning(
+                'Connection closed, reopening in 5 seconds: %s',
+                reason)
+            self.connection.ioloop.call_later(1, self.connect)
 
     def close(self):
         """Stop the example by closing the channel and connection. We
@@ -110,9 +111,7 @@ class RmqConnection():
         log.info('Closing Connection')
         self._stopping = True
         if self.connection is not None:
-            log.info('Closing connection')
             self.connection.close()
-            self.connection = None
 
     def create_channel(self, channel_number=None, on_close_callback=None):
         """
@@ -130,12 +129,15 @@ class RmqConnection():
         """
 
         if on_close_callback:
-            log.debug('The channel on_close_callback is has been overloaded')
+            log.debug(
+                'The channel on_close_callback is has been overloaded')
         else:
-            log.debug('The channel on_close_callback is default to RmqConnection')
+            log.debug(
+                'The channel on_close_callback is default to RmqConnection')
             on_close_callback = self.on_channel_closed
 
-        self.new_channel = self.connection.channel(on_open_callback=self.on_channel_open)
+        self.new_channel = self.connection.channel(
+            on_open_callback=self.on_channel_open)
         self.new_channel.add_on_close_callback(on_close_callback)
         # Wait for channel to open before returning
         while not self.new_channel.is_open:
@@ -171,11 +173,30 @@ def main():
     """
     Used for an example of how connection takes palce and how to send a message
     TODO: Make it as an end to end test
-    """
 
-    connection = RmqConnection()
-    connection.connect()
-    channel = connection.create_channel()
+    NOTE: A numebr of OS environment variables need to be set for a successful
+    connection to the rmq server. These are;
+    - RMQ_USER
+    - RMQ_PASS
+    - RMQ_HOST
+    - SER_TLA
+    """
+    # Create the RmqConnection class
+    rmqconnection = RmqConnection('ConnectionNameHere')
+    # Start connection and get connection handle.
+    connection = rmqconnection.connect()
+    # Open a channel and get a channel object for local use
+    channel = rmqconnection.create_channel()
+    # Send a message
+    channel.basic_publish(
+        exchange='',
+        routing_key='hello',
+        body='HELLO!')
+
+    # Check if the connection is still open
+    if connection.is_open:
+        rmqconnection.close()
+
 
 if __name__ == '__main__':
     main()

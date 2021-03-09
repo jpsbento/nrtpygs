@@ -9,17 +9,23 @@ import threading
 
 import rmqsettings as settings
 
+
 class RmqLogging():
+
     def __init__(self):
+        self._sent = 0
         self._stopping = False
         log.debug('Initiating class')
         self._rmqconnection = RmqConnection('rmqlogger')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.create_channel()
-        self.logq = Queue(maxsize=settings.LOGQ_MAX_SIZE)
-        self.logThread = threading.Thread(target=self._publish_message_loop, args=())
-        self.logThread.start()
+        self._logq = Queue(maxsize=settings.LOGQ_MAX_SIZE)
 
+        # Set up publish message thread.
+        self._logThread = threading.Thread(
+            target=self._publish_message_loop,
+            args=())
+        self._logThread.start()
 
     def log(self, level, message):
         """
@@ -31,13 +37,13 @@ class RmqLogging():
             'level': settings.LOGLEVELS[level],
             'message': message,
         }
-        self._publish_message(body)
+        self._logq.put(body)
 
     def disconnect(self):
+        print('Disconnecting')
         self._stopping = True
-        self._connection.close()
-        self.logThread.join
-
+        self._rmqconnection.close()
+        self._logThread.join()
 
     def _recreate_channel(self):
         """
@@ -59,21 +65,26 @@ class RmqLogging():
 
     def _publish_message_loop(self):
         """
-        Single thread function to read logq and publish
+        Single thread function to read logq and publish log messages
         """
         log.debug('Starting publish message loop')
         while not self._stopping:
             # Block until a message body is available
-            body = self.logq.get(block=True, timeout=None)
-            if self.logq.qsize()>10000:
-                print ("more than 10000 messages in queue")
-            elif self.logq.qsize()>1000:
-                print ("more than 1000 messages in queue")
-            elif self.logq.qsize()>100:
-                print ("more than 100 messages in queue")
-            elif self.logq.qsize()>50:
-                print ("more than 50 messages in queue")
-            # Publish the message on the log connection
+            # TODO: Tidy up the double breaks.
+            # Could raise an exception perhaps?
+            while self._logq.empty():
+                if self._stopping:
+                    break
+                pass
+            if self._stopping:
+                break
+
+            self._sent += 1
+            if self._sent % 100 == 0:
+                log.debug('Published {} messages. Queuesize is {}'
+                          .format(self._sent, self._logq.qsize()))
+
+            body = self._logq.get(block=True, timeout=None)
             self._publish_message(body)
 
     def _publish_message(self, body):
@@ -87,17 +98,18 @@ class RmqLogging():
                 self._channel.basic_publish(
                     exchange=settings.EXCHANGES['log'],
                     routing_key='rcs.'+settings.TLA+'.'+body['level'],
-                    properties=pika.BasicProperties(),
+                    properties=settings.LOG_PROPERTIES,
                     body=json.dumps(body)
                 )
                 message_sent = True
-            except:
-                log.error('Error sending message, attempting reconnection')
+            except pika.exceptions.ChannelWrongStateError:
+                log.error('Error sending message (ChannelWrongState),'
+                          + ' attempting reconnection')
                 self._recreate_channel()
 
 
 # Set up telemetry object
-rmqlogging = RmqLogging()
+rmqlog = RmqLogging()
 
 
 def main():
@@ -105,10 +117,15 @@ def main():
     Used for an example of how logging can be used
     TODO: Make it as an end to end test?
     """
-
-    while True:
-        rmqlogging.log(1, 'This is a debug log')
-    rmqlogging.disconnect()
+    x = 1000
+    delay = 0.1
+    print('Sending {} mesages with {}s delay'.format(str(x), str(delay)))
+    for i in range(1, x+1):
+        rmqlog.log(1, 'This is a debug log number ' + str(i))
+        time.sleep(delay)
+    print('Sent {} messages'.format(str(x)))
+    time.sleep(2)
+    rmqlog.disconnect()
 
 
 if __name__ == '__main__':

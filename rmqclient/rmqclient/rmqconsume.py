@@ -1,16 +1,7 @@
-import asyncio
-import datetime
-import pika
 from rmqconnection import RmqConnection
-from queue import Queue
-import json
-import time
-import threading
 import rmqsettings as settings
-
 import logging as log
 
-import code
 
 class RmqConsume():
     """
@@ -32,7 +23,7 @@ class RmqConsume():
         self._consumers = []
 
     def consume(self, exchange, binding_keys, queue_name, callback):
-        #Set the queuename to hold the service TLA prefix
+        # Set the queuename to hold the service TLA prefix
         new_consumer = RmqConsumer(
             self._connection,
             exchange,
@@ -52,7 +43,8 @@ class RmqConsumer():
     The class for holding information on an individual consumer
     """
 
-    def __init__(self, connection, exchange, binding_keys, queue_name, callback):
+    def __init__(self, connection, exchange,
+                 binding_keys, queue_name, callback):
         self._rmqconnection = connection
         self._connection = self._rmqconnection.get_connection()
         self._channel = None
@@ -80,6 +72,15 @@ class RmqConsumer():
         )
 
     def _setup_bindings(self):
+        # First delete any previous bindings. This allows code updates
+        # to take effect without getting old messages routed.
+        """
+        self._channel.queue_unbind(
+            queue=self._queue_name,
+            exchange=self._exchange)
+        """
+        log.debug('Setting up bindings')
+        # Then rebind the keys
         for binding_key in self._binding_keys:
             self._channel.queue_bind(
                 exchange=self._exchange,
@@ -93,6 +94,7 @@ class RmqConsumer():
         Being asyncronous we don't need a
         pika.Channel.start_consuming() method
         """
+        log.debug('Starting consume')
         self._channel.basic_consume(
             queue=self._queue_name,
             on_message_callback=self._callback,
@@ -100,22 +102,27 @@ class RmqConsumer():
         )
 
 
+
+class ExampleConsume():
+
+    def __init__(self):
+        self._msgs_received = 0
+        consume = RmqConsume()
+        consume.consume('rmq.logging', ['#'], 'test_queue', self.msgcallback)
+
+    def msgcallback(self, ch, method, props, body):
+        self._msgs_received +=1
+        if self._msgs_received % 100 == 0:
+            print('Messages received', self._msgs_received)
+
+
 def main():
     """
-    Used for an example of how consuming takes place and how to send a message
-    TODO: Make it as an end to end test?
+    This triggers the ExampleConsume class, which shows how the consume callback
+    can be used within a Class structure interacting with Class members
     """
 
-    consume=RmqConsume()
-
-    def msgcallback(ch, method, properties, body):
-        if not msgs_received:
-            msgs_received = 0
-        msgs_received += 1
-        if msgs_received%100:
-            print (msgs_reecieved, 'messages have been received')
-
-    consume.consume('rmq.logging', ['#'], 'all_queue', msgcallback)
+    ExampleConsume()
 
 if __name__ == '__main__':
     main()
