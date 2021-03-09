@@ -28,6 +28,7 @@ jobs:
       run: cp testsecret.env secret.env
 
     - name: Run tests on the gsi
+      run: docker-compose up -d rmq
       run: docker-compose up gsi
 
     - name: Report Result to Slack
