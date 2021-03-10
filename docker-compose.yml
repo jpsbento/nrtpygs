@@ -12,9 +12,9 @@ services:
             dockerfile: ./docker/gsi/Dockerfile
         image: gsi
         container_name: gsi
-        entrypoint: pytest -p no:cacheprovider --capture=tee-sys
+        entrypoint: pytest -rx -p no:cacheprovider --capture=tee-sys --durations=3
         volumes:
-            - ./rcsmq:/opt/code
+            - ./rmqclient:/opt/code
         depends_on:
             - rmq
 

@@ -16,7 +16,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN pip3 install --upgrade pip
 
 # Install other dependencies
-COPY rcsmq/requirements.txt /opt/
+COPY rmqclient/requirements.txt /opt/
 RUN pip3 install -r /opt/requirements.txt
 
 
@@ -46,7 +46,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONPATH='/opt/code:$PYTHONPATH'
 
 # Copy the code
-COPY --chown=rcs:rcs rcsmq/ /opt/code/
+COPY --chown=rcs:rcs rmqclient/ /opt/code/
 
 # Set working directory
 WORKDIR /opt/code

@@ -1,6 +1,5 @@
 # Development Workflow Procedures and Tips
 
-
 ## Prerequisites
 Your system must have docker and docker-compose installed.
 
@@ -30,6 +29,21 @@ management web interface is available locally.
 * The `gsi` container maps the local `rcsmq/` filesystem into the container.
 This means that any code changes to the `rcsmq/` folder do not require
 rebuilding of the gsi container, just that it is rerun (or maybe not even!)
+
+* To test locally you will need the secrets.env and environment.env variables
+loaded in your shell (**note**, BASH shell is assumed). To acheive
+this you can use the following commands;
+```shell
+export $(grep -v '^#' secret.env | xargs)
+export $(grep -v '^#' environment.env | xargs)
+```
+
+* You may have to overwrite hostnames however, as they use 'friendly'
+names inside the docker network which is not available to the host system.
+In particular the rmq ports are mapped to the localhost so you need to do,
+```shell
+export RMQ_HOST=127.0.0.1
+```
 
 
 ## Branch naming
@@ -111,6 +125,7 @@ gh pr list
 gh pr merge [<number> | <branch>]
 ```
 
+**NOTE** choose to delete the bracnh once the pull request has been approved and it has been merged onto the main development branch
 
 ** The above happen in loops until a release needs to be made **
 

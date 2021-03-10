@@ -30,8 +30,11 @@ jobs:
     - name: Bring up rmq service
       run: docker-compose up -d rmq
 
+    - name: Bring up rmq service
+      run: docker-compose up -d rmq
+
     - name: Run tests on the gsi
-      run: docker-compose up gsi
+      run: docker-compose run gsi
 
     - name: Report Result to Slack
       uses: 8398a7/action-slack@v3

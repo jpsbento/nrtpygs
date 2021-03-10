@@ -27,5 +27,42 @@
       "internal": false,
       "arguments": {}
     }
+  ],
+  "queues": [
+    {
+      "name": "LOG.complete",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "TEL.complete",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-max-priority": 3,
+        "x-queue-type": "classic"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "source": "rmq.logging",
+      "vhost": "/",
+      "destination": "LOG.complete",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments": {}
+    },
+    {
+      "source": "rmq.telemetry",
+      "vhost": "/",
+      "destination": "TEL.complete",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments": {}
+    }
   ]
 }
