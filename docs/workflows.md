@@ -59,7 +59,7 @@ and in the `README.md`
 Triggered on a push or pull to the `main` branch. This is the main CI/CD test
 which sets up the docker environement and runs docker-compose on the `gsi`
 Dockerfile, with a pytest entrypoint. This will start up the `rmq` container
-image, and run the pytest tests for the `rcsmq` library within the `gsi`
+image, and run the pytest tests for the `rmqclient` library within the `gsi`
 container image.
 
 If any of the docker-compose system fails or if pytest fails, then there is a

@@ -1,4 +1,4 @@
-# rabbitmq server setup for rcsmq testing
+# rabbitmq server setup for rmqclient testing
 FROM rabbitmq:3-management-alpine
 
 
