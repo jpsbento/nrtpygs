@@ -11,7 +11,7 @@ import rmqclient.rmqsettings as settings
 
 
 class RmqLogging():
-
+    
     def __init__(self):
         self._sent = 0
         self._stopping = False
@@ -119,7 +119,7 @@ def main():
     Used for an example of how logging can be used
     TODO: Make it as an end to end test?
     """
-    x = 1000
+    x = 10
     delay = 0.1
     print('Sending {} mesages with {}s delay'.format(str(x), str(delay)))
     for i in range(1, x+1):

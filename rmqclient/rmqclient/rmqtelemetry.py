@@ -19,7 +19,9 @@ class RmqTelemetry():
         rmqlog.log(1, 'Telemetry object created')
         self._rmqconnection = RmqConnection('rmqtemelemtry')
         self._connection = self._rmqconnection.connect()
-        self._channel = self._rmqconnection.create_channel()
+        self._ioloop = self._connection.ioloop
+        self._channel = None
+        self._ioloop.add_callback(self.create_channel)
         self._telq = PriorityQueue(maxsize=settings.LOGQ_MAX_SIZE)
 
         # Set up publish message thread.
@@ -27,6 +29,9 @@ class RmqTelemetry():
             target=self._publish_message_loop,
             args=())
         self._telThread.start()
+
+    def create_channel(self):
+        self._channel = self._rmqconnection.create_channel()
 
     def tel(self, datum, value):
         """
@@ -39,7 +44,8 @@ class RmqTelemetry():
             'name': datum,
             'value': value,
         }
-        self._telq.put((settings.TEL_PRIORITIES[body['type']], body))
+        priority = settings.TEL_PRIORITIES[body['type']]
+        self._telq.put((priority, body))
 
     def alm(self, name, state):
         """
@@ -52,7 +58,8 @@ class RmqTelemetry():
             'name': name,
             'value': state,
         }
-        self._telq.put((settings.TEL_PRIORITIES[body['type']], body))
+        priority = settings.TEL_PRIORITIES[body['type']]
+        self._telq.put((priority, body))
 
     def evn(self, name):
         """
@@ -64,11 +71,14 @@ class RmqTelemetry():
             'timestamp': time,
             'name': name,
         }
-        self._telq.put((settings.TEL_PRIORITIES[body['type']], body))
+        priority = settings.TEL_PRIORITIES[body['type']]
+        self._telq.put((priority, body))
 
     def disconnect(self):
+        log.info('Disconnecting Telemetry Connection')
         self._stopping = True
         self._rmqconnection.close()
+        self._ioloop.stop()
         time.sleep(0.1)
         self._telThread.join()
 
@@ -106,7 +116,7 @@ class RmqTelemetry():
                 break
 
             body = self._telq.get(block=True, timeout=None)[1]
-            self._publish_message(body)
+            self._ioloop.add_callback(lambda: self._publish_message(body))
 
     def _publish_message(self, body):
         """

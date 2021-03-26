@@ -25,6 +25,7 @@ log = log.getLogger(__name__)
 class RmqConnection():
     """
     Class to provide connection and new channel options to the rmq server
+    At present a single channel is opened and the object returned.
     """
 
     def __init__(self, name):
@@ -61,10 +62,18 @@ class RmqConnection():
         return self.connection
 
     def get_connection(self):
+        while not self.connection.is_open:
+            pass
         return self.connection
+
+    def get_channel(self):
+        while not self.channel.is_open:
+            pass
+        return self.channel
 
     def on_connection_open(self, _unused_connection):
         log.info('Connection opened')
+        self.channel = self.connection.channel()
         return
 
     def on_connection_open_error(self, _unused_connection, err):
@@ -101,9 +110,16 @@ class RmqConnection():
         while self.connection.is_open:
             pass
 
+
     def create_channel(self, channel_number=None, on_close_callback=None):
         """
-        Create a channel on the connection. Once open return the channel object
+        NOTE: THIS IS NOT ACTIVE IN THE rmqconnectionAPI
+        Creating and returning channel handles outside of the ioloop structure
+        causes multithreading issues which cause frame errors.
+        See https://github.com/4mnrt/wp4-pdr-project/issues/23
+
+        Creates a channel on the connection.
+        Once open returns the channel object
 
         on_close_callback can be specified to handle disconnections of
         the channel in a graceful way with your own function.
@@ -131,6 +147,7 @@ class RmqConnection():
         while not self.new_channel.is_open:
             pass
         return self.new_channel
+
 
     def on_channel_open(self, channel):
         log.info('Channel opened')
@@ -162,12 +179,14 @@ def main():
     # Start connection and get connection handle.
     connection = rmqconnection.connect()
     # Open a channel and get a channel object for local use
-    channel = rmqconnection.create_channel()
+    channel = rmqconnection.get_channel()
     # Send a message
-    channel.basic_publish(
-        exchange='',
-        routing_key='hello',
-        body='HELLO!')
+    connection.ioloop.add_callback(
+        lambda: channel.basic_publish(
+            exchange='',
+            routing_key='hello',
+            body='HELLO!')
+    )
 
     # Check if the connection is still open
     if connection.is_open:
