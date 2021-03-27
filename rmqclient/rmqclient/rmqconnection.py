@@ -30,7 +30,8 @@ class RmqConnection():
 
     def __init__(self, name):
         self._stopping = False
-        self.new_channel = None
+        self.channel = None
+        self.new_channel = None # Non functional. See self.create_channel()
         self.connection_name = settings.TLA + '.' + name
 
     def connect(self):
@@ -67,6 +68,13 @@ class RmqConnection():
         return self.connection
 
     def get_channel(self):
+        """
+        Waits until channel is defined and open before returning the channel
+        handle.
+        Not elegent, but works
+        """
+        while self.channel == None:
+            pass
         while not self.channel.is_open:
             pass
         return self.channel
@@ -167,26 +175,38 @@ def main():
     Used for an example of how connection takes place and how to send a message
     TODO: Make it as an end to end test
 
-    NOTE: A numebr of OS environment variables need to be set for a successful
+    NOTE: A number of OS environment variables need to be set for a successful
     connection to the rmq server. These are;
     - RMQ_USER
     - RMQ_PASS
     - RMQ_HOST
     - SER_TLA
+
+    See rcs-gsi/utils.setenv.sh for a tool to do this outside of the 4mnrt/gsi
+    container.
     """
     # Create the RmqConnection class
     rmqconnection = RmqConnection('ConnectionNameHere')
+
     # Start connection and get connection handle.
     connection = rmqconnection.connect()
+
     # Open a channel and get a channel object for local use
     channel = rmqconnection.get_channel()
-    # Send a message
+
+    # Send a message usong the channel handle inside the ioloop callback
     connection.ioloop.add_callback(
         lambda: channel.basic_publish(
             exchange='',
             routing_key='hello',
             body='HELLO!')
     )
+
+    # Connections should be long lived and the previous call was asynchronous
+    # meaning we should allow the ioloop to complete the request
+    # Importing inline is horrendous, but needs must!
+    import time
+    time.sleep(0.5)
 
     # Check if the connection is still open
     if connection.is_open:

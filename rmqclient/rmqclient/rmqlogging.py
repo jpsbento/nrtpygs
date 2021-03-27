@@ -11,14 +11,14 @@ import rmqclient.rmqsettings as settings
 
 
 class RmqLogging():
-    
+
     def __init__(self):
         self._sent = 0
         self._stopping = False
         log.debug('Initiating class')
         self._rmqconnection = RmqConnection('rmqlogger')
         self._connection = self._rmqconnection.connect()
-        self._channel = self._rmqconnection.create_channel()
+        self._channel = self._rmqconnection.get_channel()
         self._logq = Queue(maxsize=settings.LOGQ_MAX_SIZE)
 
         # Set up publish message thread.
@@ -43,8 +43,8 @@ class RmqLogging():
         self._stopping = True
         # Wait for all messages to be sent
 
-        # Allow extra time for last message
-        time.sleep(5)
+        # Allow extra time for remaining messages to purge
+        time.sleep(1)
         # Close the connection and rejoin the log thread
         self._rmqconnection.close()
         self._logThread.join()
@@ -61,8 +61,9 @@ class RmqLogging():
         # Wait until Connection reopens if it was a channel issue;
         log.debug('Waiting on connection to reopen')
 
-        while not self._connection.is_open:
-            self._connection = self._rmqconnection.get_connection()
+
+        self._connection = self._rmqconnection.get_connection()
+        self._channel = self._rmqconnection.get_channel()
 
         log.debug('Connection is open again, recreating channel')
         self._channel = self._rmqconnection.create_channel()
@@ -76,7 +77,7 @@ class RmqLogging():
             # TODO: Tidy up the double breaks.
             # Could raise an exception perhaps?
             while self._logq.empty():
-                if self._stopping:
+                if self._stopping == True:
                     break
             if self._stopping:
                 break
@@ -87,7 +88,9 @@ class RmqLogging():
                           .format(self._sent, self._logq.qsize()))
 
             body = self._logq.get(block=True, timeout=None)
-            self._publish_message(body)
+            self._connection.ioloop.add_callback(
+                lambda: self._publish_message(body)
+            )
 
     def _publish_message(self, body):
         """

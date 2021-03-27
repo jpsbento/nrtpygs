@@ -19,9 +19,7 @@ class RmqTelemetry():
         rmqlog.log(1, 'Telemetry object created')
         self._rmqconnection = RmqConnection('rmqtemelemtry')
         self._connection = self._rmqconnection.connect()
-        self._ioloop = self._connection.ioloop
-        self._channel = None
-        self._ioloop.add_callback(self.create_channel)
+        self._channel = self._rmqconnection.get_channel()
         self._telq = PriorityQueue(maxsize=settings.LOGQ_MAX_SIZE)
 
         # Set up publish message thread.
@@ -77,10 +75,13 @@ class RmqTelemetry():
     def disconnect(self):
         log.info('Disconnecting Telemetry Connection')
         self._stopping = True
+        # Allow extra time for remaining messages to purge
+        time.sleep(1)
+        print('Finished Sleep')
         self._rmqconnection.close()
-        self._ioloop.stop()
-        time.sleep(0.1)
+        print('Sent close')
         self._telThread.join()
+        print('Joined threads')
 
     def _recreate_channel(self):
         """
@@ -110,13 +111,16 @@ class RmqTelemetry():
             # TODO: Tidy up the double breaks.
             # Could raise an exception perhaps?
             while self._telq.empty():
-                if self._stopping:
+                if self._stopping == True:
                     break
-            if self._stopping:
+            if self._stopping == True:
                 break
 
-            body = self._telq.get(block=True, timeout=None)[1]
-            self._ioloop.add_callback(lambda: self._publish_message(body))
+            body = self._telq.get()[1]
+            if body == None:
+                continue
+            else:
+                self._connection.ioloop.add_callback(lambda: self._publish_message(body))
 
     def _publish_message(self, body):
         """
@@ -160,7 +164,7 @@ def main():
         rmqtel.tel('temp', 122.3)
         time.sleep(delay)
     print('Sent {} messages'.format(str(x)))
-    time.sleep(2)
+    time.sleep(1)
     rmqtel.disconnect()
 
 
