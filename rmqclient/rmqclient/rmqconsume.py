@@ -28,14 +28,17 @@ class RmqConsume():
         self._connection.connect()
         self._consumers = []
 
-    def consume(self, exchange, binding_keys, queue_name, callback):
+    def consume(self, exchange, binding_keys, queue_name,
+                callback, durable=False, arguments=None):
         # Set the queuename to hold the service TLA prefix
         new_consumer = RmqConsumer(
             self._connection,
             exchange,
             binding_keys,
             queue_name,
-            callback
+            callback,
+            durable,
+            arguments
         )
 
         self._consumers.append(new_consumer)
@@ -53,17 +56,18 @@ class RmqConsumer():
     """
 
     def __init__(self, connection, exchange,
-                 binding_keys, queue_name, callback):
+                 binding_keys, queue_name, callback, durable, arguments):
         self._rmqconnection = connection
         self._connection = self._rmqconnection.get_connection()
         self._channel = None
         self._exchange = exchange
         self._binding_keys = binding_keys
         if not re.search(r'^[A-Z]{3}', queue_name):
-            print('TLA not specified')
             queue_name = settings.TLA + '.' + queue_name
         self._queue_name = queue_name
         self._callback = callback
+        self._durable = durable
+        self._arguments = arguments
         self._setup_consume()
 
     def _setup_consume(self):
@@ -79,17 +83,13 @@ class RmqConsumer():
         log.debug('Creating queue {}'.format(self._queue_name))
         self._channel.queue_declare(
             queue=self._queue_name,
-            durable=True,
+            durable=self._durable,
+            arguments=self._arguments,
         )
 
     def _setup_bindings(self):
         # First delete any previous bindings. This allows code updates
         # to take effect without getting old messages routed.
-        """
-        self._channel.queue_unbind(
-            queue=self._queue_name,
-            exchange=self._exchange)
-        """
         log.debug('Setting up bindings')
         # Then rebind the keys
         for binding_key in self._binding_keys:
@@ -118,9 +118,20 @@ class ExampleConsume():
     def __init__(self):
         self._msgs_received = 0
         consume = RmqConsume()
-        consume.consume('rmq.logging', ['#'], 'test_queue', self.msgcallback)
+        consume.consume(
+            'rmq.logging',
+            ['#'],
+            'priority_queue',
+            self.msgcallback,
+            durable=True,
+            arguments={
+                'x-queue-type': 'classic',
+                'x-max-priority': 3
+            }
+        )
 
     def msgcallback(self, ch, method, props, body):
+        print(props.app_id, body)
         self._msgs_received += 1
         if self._msgs_received % 100 == 0:
             print('Messages received', self._msgs_received)

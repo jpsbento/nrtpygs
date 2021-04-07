@@ -14,7 +14,9 @@ class RmqLogging():
 
     def __init__(self):
         self._sent = 0
+        self._sending_message = False
         self._stopping = False
+        self._await_reconnect = False
         log.debug('Initiating class')
         self._rmqconnection = RmqConnection('rmqlogger')
         self._connection = self._rmqconnection.connect()
@@ -40,77 +42,73 @@ class RmqLogging():
         self._logq.put(body)
 
     def disconnect(self):
+        log.info('Disconnecting Logging Connection')
         self._stopping = True
         # Wait for all messages to be sent
 
+        while not self._logq.empty():
+            pass
         # Allow extra time for remaining messages to purge
         time.sleep(1)
         # Close the connection and rejoin the log thread
         self._rmqconnection.close()
         self._logThread.join()
 
-    def _recreate_channel(self):
+    def _await_new_channel(self):
         """
-        Recreate the channel if there is a publish error
+        Await RmqConnection to reconnect and create a new channel
         """
-        log.info('Trying to recreate the channel')
-        try:
-            self._channel.close()
-        except Exception as e:
-            log.error('Received Exception on channel close: {}'.format(e))
-        # Wait until Connection reopens if it was a channel issue;
+        log.info('Awaiting channel recreation')
         log.debug('Waiting on connection to reopen')
-
-
         self._connection = self._rmqconnection.get_connection()
+        log.debug('Connection is open again')
         self._channel = self._rmqconnection.get_channel()
-
-        log.debug('Connection is open again, recreating channel')
-        self._channel = self._rmqconnection.create_channel()
+        log.debug('Channel is open again')
+        self._await_reconnect = False
 
     def _publish_message_loop(self):
         """
         Single thread function to read logq and publish log messages
         """
-        while not self._stopping:
-            # Block until a message body is available
-            # TODO: Tidy up the double breaks.
-            # Could raise an exception perhaps?
-            while self._logq.empty():
-                if self._stopping == True:
-                    break
-            if self._stopping:
+        log.debug('Starting publish message loop')
+        while True:
+            # Block if channel is reopening
+            if self._await_reconnect:
+                self._await_new_channel()
+
+            if not self._logq.empty() and not self._sending_message:
+                self._sending_message = True
+                self._connection.ioloop.add_callback(self._publish_message)
+                self._sent += 1
+                if self._sent % 1000 == 0:
+                    log.debug(
+                        'Published {} telemetry messages. Queuesize is {}'
+                        .format(self._sent, self._logq.qsize())
+                    )
+
+            if self._logq.empty() and self._stopping:
                 break
 
-            self._sent += 1
-            if self._sent % 1000 == 0:
-                log.debug('Published {} messages. Queuesize is {}'
-                          .format(self._sent, self._logq.qsize()))
-
-            body = self._logq.get(block=True, timeout=None)
-            self._connection.ioloop.add_callback(
-                lambda: self._publish_message(body)
-            )
-
-    def _publish_message(self, body):
+    def _publish_message(self):
         """
         Publish message in a loop until mit is sent. If there is an exception
         then recreate the send channel on the autoreconnected connection
         """
-        message_sent = False
-        while not message_sent:
-            try:
-                self._channel.basic_publish(
-                    exchange=settings.EXCHANGES['log'],
-                    routing_key='rcs.'+settings.TLA+'.'+body['level'],
-                    properties=settings.LOG_PROPERTIES,
-                    body=json.dumps(body)
-                )
-                message_sent = True
-            except pika.exceptions.ChannelWrongStateError:
-                log.error('Error sending message (ChannelWrongState),'
-                          + ' attempting reconnection')
-                self._recreate_channel()
+        body = self._logq.get(block=True, timeout=None)
+        try:
+            self._channel.basic_publish(
+                exchange=settings.EXCHANGES['log'],
+                routing_key='rcs.' + settings.TLA + '.' + body['level'],
+                properties=settings.LOG_PROPERTIES,
+                body=json.dumps(body)
+            )
+
+        except pika.exceptions.ChannelWrongStateError:
+            log.error(
+                'Error sending message (ChannelWrongState), reconnecting'
+            )
+            self._await_reconnect = True
+        self._sending_message = False
 
 
 # Set up telemetry object
@@ -122,14 +120,15 @@ def main():
     Used for an example of how logging can be used
     TODO: Make it as an end to end test?
     """
-    x = 10
-    delay = 0.1
+    x = 1000
+    delay = 0
     print('Sending {} mesages with {}s delay'.format(str(x), str(delay)))
-    for i in range(1, x+1):
+    print(datetime.datetime.now())
+    for i in range(1, x + 1):
         rmqlog.log(1, 'This is a debug log number ' + str(i))
         time.sleep(delay)
+    print(datetime.datetime.now())
     print('Sent {} messages'.format(str(x)))
-    time.sleep(2)
     rmqlog.disconnect()
 
 

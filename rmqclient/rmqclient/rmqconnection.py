@@ -7,7 +7,7 @@ import rmqclient.rmqsettings as settings
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
     os.environ['RMQ_USER'], os.environ['RMQ_PASS']
-    )
+)
 
 RMQ_HOST = os.environ['RMQ_HOST']
 
@@ -31,7 +31,7 @@ class RmqConnection():
     def __init__(self, name):
         self._stopping = False
         self.channel = None
-        self.new_channel = None # Non functional. See self.create_channel()
+        self.new_channel = None  # Non functional. See self.create_channel()
         self.connection_name = settings.TLA + '.' + name
 
     def connect(self):
@@ -39,6 +39,7 @@ class RmqConnection():
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
+        log.debug('Creating connection')
         parameters = pika.ConnectionParameters(
             host=RMQ_HOST,
             credentials=CREDENTIALS,
@@ -103,9 +104,10 @@ class RmqConnection():
             log.info('Connection closed by user')
             self.connection.ioloop.stop()
             self.connection = None
+            self.channel = None
         else:
             log.warning(
-                'Connection closed, reopening in 5 seconds: %s',
+                'Connection closed, reopening in 1 second: %s',
                 reason)
             self.connection.ioloop.call_later(1, self.connect)
 
@@ -117,7 +119,6 @@ class RmqConnection():
         # Block until connection closes
         while self.connection.is_open:
             pass
-
 
     def create_channel(self, channel_number=None, on_close_callback=None):
         """
@@ -155,7 +156,6 @@ class RmqConnection():
         while not self.new_channel.is_open:
             pass
         return self.new_channel
-
 
     def on_channel_open(self, channel):
         log.info('Channel opened')
@@ -206,7 +206,7 @@ def main():
     # meaning we should allow the ioloop to complete the request
     # Importing inline is horrendous, but needs must!
     import time
-    time.sleep(0.5)
+    time.sleep(100)
 
     # Check if the connection is still open
     if connection.is_open:
