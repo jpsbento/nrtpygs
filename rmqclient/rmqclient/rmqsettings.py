@@ -27,13 +27,12 @@ TEL_PROPERTIES = pika.BasicProperties(
     app_id=TLA
 )
 
-# Priorities for both Python Queue and RabbitMQ
-# Althogh RabbitMQ needs a flip!
-# A lower number is higher priority
+# Priorities for RabbitMQ Priority Queues
+# A higher number is higher priority
 TEL_PRIORITIES = {
-    'tel': 3,
+    'tel': 1,
     'alm': 2,
-    'evn': 1,
+    'evn': 3,
 }
 
 EXCHANGES = {

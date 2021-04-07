@@ -6,7 +6,7 @@ Repository for the Robotic Control System - Generic Services Image
 
 This repository contains;
 * The RabbitMQ definition and setup for the RCS containerised middleware -rmq
-* Code for rcsmq - The python Library for RCS services to communicate with rmq
+* Code for rmqclient - The python Library for RCS services to communicate with rmq
 * Docker file to create the Genric Services Image which is used for RCS
 servcies - gsi
 * Github Actions workflows for automated testing and deployment
@@ -54,7 +54,7 @@ the docker bridge network.
 gsi is specified in the docker compose file to start with a pytest entrypoint.
 This means the container is run once. This will run pytest on the `opt/code/`
 directory, without creating any pytest cache files. Infact this is set up in the
-`docker-compose.yml` to map the local `rcsmq` directory to `opt/code/`. This means
+`docker-compose.yml` to map the local `rmqclient` directory to `opt/code/`. This means
 that code can be modified locally and tested in the container without requiring
 rebuild.
 
@@ -114,7 +114,7 @@ If these settings are changed you need to rebuild the container images.
 ## Workflows
 There are 3 workflows in operation and stored in [.github/workflows/](.github/workflows)
 * primary-workflow.yml - main testing workflow running pytest on gsi
-* flake8.yml - python linter for rcsmq
+* flake8.yml - python linter for rmqclient
 * docker-publish.yml - triggered on release action to push gsi to dockerhub
 
 See [docs/workflows.md](docs/workflows.md) for more info.

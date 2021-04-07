@@ -7,7 +7,7 @@ import rmqclient.rmqsettings as settings
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
     os.environ['RMQ_USER'], os.environ['RMQ_PASS']
-    )
+)
 
 RMQ_HOST = os.environ['RMQ_HOST']
 
@@ -25,11 +25,13 @@ log = log.getLogger(__name__)
 class RmqConnection():
     """
     Class to provide connection and new channel options to the rmq server
+    At present a single channel is opened and the object returned.
     """
 
     def __init__(self, name):
         self._stopping = False
-        self.new_channel = None
+        self.channel = None
+        self.new_channel = None  # Non functional. See self.create_channel()
         self.connection_name = settings.TLA + '.' + name
 
     def connect(self):
@@ -37,6 +39,7 @@ class RmqConnection():
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
+        log.debug('Creating connection')
         parameters = pika.ConnectionParameters(
             host=RMQ_HOST,
             credentials=CREDENTIALS,
@@ -61,10 +64,25 @@ class RmqConnection():
         return self.connection
 
     def get_connection(self):
+        while not self.connection.is_open:
+            pass
         return self.connection
+
+    def get_channel(self):
+        """
+        Waits until channel is defined and open before returning the channel
+        handle.
+        Not elegent, but works
+        """
+        while self.channel == None:
+            pass
+        while not self.channel.is_open:
+            pass
+        return self.channel
 
     def on_connection_open(self, _unused_connection):
         log.info('Connection opened')
+        self.channel = self.connection.channel()
         return
 
     def on_connection_open_error(self, _unused_connection, err):
@@ -86,9 +104,10 @@ class RmqConnection():
             log.info('Connection closed by user')
             self.connection.ioloop.stop()
             self.connection = None
+            self.channel = None
         else:
             log.warning(
-                'Connection closed, reopening in 5 seconds: %s',
+                'Connection closed, reopening in 1 second: %s',
                 reason)
             self.connection.ioloop.call_later(1, self.connect)
 
@@ -103,7 +122,13 @@ class RmqConnection():
 
     def create_channel(self, channel_number=None, on_close_callback=None):
         """
-        Create a channel on the connection. Once open return the channel object
+        NOTE: THIS IS NOT ACTIVE IN THE rmqconnectionAPI
+        Creating and returning channel handles outside of the ioloop structure
+        causes multithreading issues which cause frame errors.
+        See https://github.com/4mnrt/wp4-pdr-project/issues/23
+
+        Creates a channel on the connection.
+        Once open returns the channel object
 
         on_close_callback can be specified to handle disconnections of
         the channel in a graceful way with your own function.
@@ -150,24 +175,38 @@ def main():
     Used for an example of how connection takes place and how to send a message
     TODO: Make it as an end to end test
 
-    NOTE: A numebr of OS environment variables need to be set for a successful
+    NOTE: A number of OS environment variables need to be set for a successful
     connection to the rmq server. These are;
     - RMQ_USER
     - RMQ_PASS
     - RMQ_HOST
     - SER_TLA
+
+    See rcs-gsi/utils.setenv.sh for a tool to do this outside of the 4mnrt/gsi
+    container.
     """
     # Create the RmqConnection class
     rmqconnection = RmqConnection('ConnectionNameHere')
+
     # Start connection and get connection handle.
     connection = rmqconnection.connect()
+
     # Open a channel and get a channel object for local use
-    channel = rmqconnection.create_channel()
-    # Send a message
-    channel.basic_publish(
-        exchange='',
-        routing_key='hello',
-        body='HELLO!')
+    channel = rmqconnection.get_channel()
+
+    # Send a message usong the channel handle inside the ioloop callback
+    connection.ioloop.add_callback(
+        lambda: channel.basic_publish(
+            exchange='',
+            routing_key='hello',
+            body='HELLO!')
+    )
+
+    # Connections should be long lived and the previous call was asynchronous
+    # meaning we should allow the ioloop to complete the request
+    # Importing inline is horrendous, but needs must!
+    import time
+    time.sleep(100)
 
     # Check if the connection is still open
     if connection.is_open:
