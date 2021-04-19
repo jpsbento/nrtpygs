@@ -12,7 +12,7 @@ servcies - gsi
 * Github Actions workflows for automated testing and deployment
 
 ## Development workflow
-If you are going to be developing on this repository please see the notes in [docs/dev-worklow.md](docs/dev-worklow.md)
+If you are going to be developing on this repository please see the notes in [docs/dev-workflow.md](docs/dev-workflow.md)
 
 ## Requirements
 * docker
