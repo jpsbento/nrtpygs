@@ -68,5 +68,5 @@ def test_pub_consume_logs():
 
 def test_pub_consume_tel():
     pass
-    #publish_100_telemetry()
-    #consume_100_telemetry()
+    # publish_100_telemetry()
+    # consume_100_telemetry()
