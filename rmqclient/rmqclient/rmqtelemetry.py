@@ -158,8 +158,7 @@ rmqtel = RmqTelemetry()
 
 def main():
     """
-    Used for an example of how telemetry can be used
-    TODO: Make it as an end to end test?
+    Used for an example of how telemetry is used
     """
     x = 10000
     delay = 0

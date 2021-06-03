@@ -30,9 +30,6 @@ jobs:
     - name: Bring up rmq service
       run: docker-compose up -d rmq
 
-    - name: Bring up rmq service
-      run: docker-compose up -d rmq
-
     - name: Run tests on the gsi
       run: docker-compose run gsi
 

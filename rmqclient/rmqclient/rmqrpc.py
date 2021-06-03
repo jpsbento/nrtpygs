@@ -30,6 +30,7 @@ class RmqRpcServer():
         TODO: This should be much more rigorous for safety
         i.e. checking user ids and privilidges
         """
+        rmqlog.log(1, 'RPC callback triggered')
         try:
             message = json.loads(body)
         except json.JSONDecodeError:
@@ -45,6 +46,7 @@ class RmqRpcServer():
             rmqlog.log(1, 'No function called: {}'.format(message['rpc']))
             response = 'No function called: ' + message['rpc']
         rmqlog.log(1, 'Response is: {}'.format(response))
+        rmqlog.log(1, 'Sending response: {}'.format(json.dumps(response)))
 
         self.connection.ioloop.add_callback(
             lambda: self.channel.basic_publish(
@@ -53,7 +55,7 @@ class RmqRpcServer():
                 properties=pika.BasicProperties(
                     type='rpc'
                 ),
-                body=str(response)
+                body=json.dumps(response)
             )
         )
 
@@ -120,6 +122,7 @@ class RmqRpcClient():
         rmqlog.log(1, 'Starting RPC Call')
         rmqlog.log(1, 'Making response channel and queue')
         response_queue = settings.TLA + '.' + 'rpcresponse'
+
         rmqlog.log(1, 'Creating response queue {}'.format(response_queue))
         self.connection.ioloop.add_callback(
             lambda: self.channel.queue_declare(
@@ -137,7 +140,7 @@ class RmqRpcClient():
         )
         time.sleep(0.2)
 
-        rmqlog.log(1, 'Making callback setup for' + response_queue)
+        rmqlog.log(1, 'Making callback setup for ' + response_queue)
         self.connection.ioloop.add_callback(
             lambda: self.channel.basic_consume(
                 queue=response_queue,
