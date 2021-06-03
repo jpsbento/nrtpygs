@@ -17,7 +17,6 @@ class RmqLogging():
         self._sending_message = False
         self._stopping = False
         self._await_reconnect = False
-        log.debug('Initiating class')
         self._rmqconnection = RmqConnection('rmqlogger')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.get_channel()
@@ -91,7 +90,7 @@ class RmqLogging():
 
     def _publish_message(self):
         """
-        Publish message in a loop until mit is sent. If there is an exception
+        Publish message in a loop until it is sent. If there is an exception
         then recreate the send channel on the autoreconnected connection
         """
         body = self._logq.get(block=True, timeout=None)
