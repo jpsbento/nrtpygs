@@ -39,7 +39,6 @@ class RmqConnection():
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
-        log.debug('Creating connection')
         parameters = pika.ConnectionParameters(
             host=RMQ_HOST,
             credentials=CREDENTIALS,
