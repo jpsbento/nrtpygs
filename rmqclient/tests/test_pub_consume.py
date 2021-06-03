@@ -67,6 +67,6 @@ def test_pub_consume_logs():
 
 
 def test_pub_consume_tel():
-    pass
+    rmqtel.disconnect()
     # publish_100_telemetry()
     # consume_100_telemetry()
