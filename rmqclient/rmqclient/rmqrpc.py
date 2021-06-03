@@ -48,7 +48,6 @@ class RmqRpcServer():
         rmqlog.log(1, 'Response is: {}'.format(response))
         rmqlog.log(1, 'Sending response: {}'.format(json.dumps(response)))
 
-
         self.connection.ioloop.add_callback(
             lambda: self.channel.basic_publish(
                 exchange=settings.EXCHANGES['rpc'],
