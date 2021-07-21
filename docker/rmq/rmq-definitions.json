@@ -27,6 +27,15 @@
       "internal": false,
       "arguments": {}
     }
+    {
+      "name": "rmq.sequencer",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
   ],
   "queues": [
     {
