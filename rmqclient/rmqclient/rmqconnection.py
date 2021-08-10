@@ -205,7 +205,7 @@ def main():
     # meaning we should allow the ioloop to complete the request
     # Importing inline is horrendous, but needs must!
     import time
-    time.sleep(100)
+    time.sleep(1)
 
     # Check if the connection is still open
     if connection.is_open:

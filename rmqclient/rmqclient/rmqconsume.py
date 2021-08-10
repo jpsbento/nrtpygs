@@ -119,7 +119,7 @@ class ExampleConsume():
         self._msgs_received = 0
         consume = RmqConsume()
         consume.consume(
-            'rmq.logging',
+            'rmq.telemetry',
             ['#'],
             'priority_queue',
             self.msgcallback,
