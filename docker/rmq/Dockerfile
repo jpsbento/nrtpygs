@@ -10,14 +10,10 @@ ENV RMQ_HOST localhost
 ENV RABBITMQ_PID_FILE /var/lib/rabbitmq/mnesia/rabbitmq
 
 RUN mkdir -p /opt/code/rmq
-ADD ./docker/rmq/rmq-setup.sh /opt/code/rmq/
-ADD ./docker/rmq/rmq-usersetup.sh /opt/code/rmq/
-
-WORKDIR /etc/rabbitmq
-
-ADD ./docker/rmq/rabbitmq.config /etc/rabbitmq/
-ADD ./docker/rmq/rmq-definitions.json /etc/rabbitmq/
-
-RUN chown rabbitmq:rabbitmq /etc/rabbitmq/*
+ADD ./docker/rmq/rmq-setup.sh \
+ ./docker/rmq/rmq-usersetup.sh /opt/code/rmq/
+ 
+ADD --chown=rabbitmq:rabbitmq ./docker/rmq/rabbitmq.config \
+ ./docker/rmq/rmq-definitions.json /etc/rabbitmq/
 
 CMD ["/opt/code/rmq/rmq-setup.sh"]
