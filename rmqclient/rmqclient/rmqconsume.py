@@ -114,6 +114,9 @@ class RmqConsumer():
 
 
 class ExampleConsume():
+    """
+    Example usage of RmqConsumer
+    """
 
     def __init__(self):
         self._msgs_received = 0
