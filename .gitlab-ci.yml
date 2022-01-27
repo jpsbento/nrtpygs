@@ -1,0 +1,5 @@
+image centos:7
+
+test:
+    script:
+        - echo "This test should fail" && exit 1
