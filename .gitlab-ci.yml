@@ -14,10 +14,21 @@ main-ci:
     - docker-compose up -d rmq
     - docker-compose up gsi
 
+linter:
+  only:
+    - pushes
+  image: python:3.8.12-slim-buster
+  script: 
+    - python -m pip install --upgrade pip
+    - pip install flake8
+    - flake8 . --verbose --count --show-source --statistics
 
-delpoy:
+
+
+deploy:
   only: 
     - tags
+  image: docker:18.09-dind
   script:
     - echo "Release"
 
