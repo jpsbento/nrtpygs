@@ -2,10 +2,17 @@ default:
   tags:
     - runner-rcs-gsi 
 
-test:
+main-ci:
+  only: pushes
   image: docker/compose:latest
   script:
-  - cp testsecret.env secret.env
-  - docker-compose up -d rmq
-  - docker-compose up gsi
+    - cp testsecret.env secret.env
+    - docker-compose up -d rmq
+    - docker-compose up gsi
+
+
+delpoy:
+  only: tags
+  script:
+    - echo "Release"
 
