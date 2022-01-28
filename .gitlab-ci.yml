@@ -3,8 +3,10 @@ default:
     - runner-rcs-gsi 
 
 
-image: centos:7
+image: docker/compose:latest
 
 test:
-    script:
-        - echo "This test should pass" && exit 0
+  script:
+    - cp testsecret.env secret.env
+    - docker-compose up -d rmq
+    - docker-compose run gsi
