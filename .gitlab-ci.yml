@@ -1,8 +1,5 @@
 default:
   tags:
-    # in order to build and push the images
-    # always in the same runner, 
-    # just put a unique tag
     - runner-rcs-gsi 
 
 
@@ -10,4 +7,4 @@ image: centos:7
 
 test:
     script:
-        - echo "This test should fail" && exit 1
+        - echo "This test should pass" && exit 0
