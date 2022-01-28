@@ -2,6 +2,7 @@ import pika
 import logging as log
 import os
 import threading
+import time
 import rmqclient.rmqsettings as settings
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
@@ -73,9 +74,11 @@ class RmqConnection():
         handle.
         Not elegent, but works
         """
-        while self.channel == None:
+        while not self.channel:
+            time.sleep(0.001)
             pass
         while not self.channel.is_open:
+            time.sleep(0.001)
             pass
         return self.channel
 
@@ -106,7 +109,7 @@ class RmqConnection():
             self.channel = None
         else:
             log.warning(
-                'Connection closed, reopening in 1 second: %s',
+                'Connection closed unexpectedly, reopening in 1 second: %s',
                 reason)
             self.connection.ioloop.call_later(1, self.connect)
 
