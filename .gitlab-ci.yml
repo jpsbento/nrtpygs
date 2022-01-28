@@ -7,5 +7,5 @@ test:
   script:
   - cp testsecret.env secret.env
   - docker-compose up -d rmq
-  - docker-compose exec gsi "ls /opt/code"
+  - docker-compose up gsi
 
