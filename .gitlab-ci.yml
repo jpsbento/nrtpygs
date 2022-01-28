@@ -2,11 +2,10 @@ default:
   tags:
     - runner-rcs-gsi 
 
-
-image: docker/compose:latest
-
 test:
+  image: docker/compose:latest
   script:
-    - cp testsecret.env secret.env
-    - docker-compose up -d rmq
-    - docker-compose run gsi
+  - cp testsecret.env secret.env
+  - docker-compose up -d rmq
+  - docker-compose exec gsi "ls /opt/code"
+
