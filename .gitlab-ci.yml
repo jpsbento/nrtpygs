@@ -5,6 +5,9 @@ default:
 main-ci:
   only: 
     - pushes
+   allow_failure:
+     exit_codes:
+      - 5
   image: docker/compose:latest
   script:
     - cp testsecret.env secret.env
