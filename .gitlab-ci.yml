@@ -5,7 +5,7 @@ default:
 main-ci:
   only: 
     - pushes
-  image: docker/compose:latest
+  image: docker/compose
   script:
     - cp testsecret.env secret.env
     - docker-compose up -d rmq
@@ -18,7 +18,7 @@ linter:
   script: 
     - python -m pip install --upgrade pip
     - pip install flake8
-    - flake8 . --verbose --count --show-source --statistics
+    - flake8
 
 
 deploy:

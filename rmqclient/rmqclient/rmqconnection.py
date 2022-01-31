@@ -12,6 +12,10 @@ CREDENTIALS = pika.PlainCredentials(
 
 RMQ_HOST = os.environ['RMQ_HOST']
 
+
+
+
+
 # Turn off pika info and Debug Level logging
 log.getLogger('pika').setLevel(settings.PIKA_LOGLEVEL)
 log.basicConfig(
