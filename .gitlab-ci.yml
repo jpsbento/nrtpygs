@@ -24,11 +24,12 @@ linter:
     - flake8 . --verbose --count --show-source --statistics
 
 
-
 deploy:
   only: 
     - tags
   image: docker:18.09-dind
   script:
-    - echo "Release"
+    - 
+    - docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}
+
 
