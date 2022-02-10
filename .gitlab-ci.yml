@@ -35,12 +35,12 @@ deploy:
     - docker build -t rcs/rmq:latest -t src/rmq:${CI_COMMIT_TAG} -f ./docker/rmq/Dockerfile . 
 
 
-    - docker push gsi:latest
-    - docker push gsi:${CI_COMMIT_TAG}
+    - docker push rcs/gsi:latest
+    - docker push rcs/gsi:${CI_COMMIT_TAG}
       
       
-    - docker push rmq:latest
-    - docker push gsi:${CI_COMMIT_TAG}
+    - docker push rcs/rmq:latest
+    - docker push rcs/gsi:${CI_COMMIT_TAG}
     
 
 
