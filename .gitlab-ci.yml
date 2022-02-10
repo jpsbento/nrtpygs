@@ -5,7 +5,9 @@ default:
 main-ci:
   only: 
     - pushes
-  image: docker/compose
+  image: docker/compose:latest
+  services:
+    - docker/compose:latest-dind
   script:
     - cp testsecret.env secret.env
     - docker-compose up -d rmq
