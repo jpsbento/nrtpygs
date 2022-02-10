@@ -1,6 +1,3 @@
-![Flake8](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/Flake8/badge.svg) ![CI Testing](https://github.com/NewRoboticTelescope/rcs-gsi/workflows/CI%20Testing/badge.svg) ![Docker Version](https://img.shields.io/docker/v/4mnrt/gsi?label=Docker%20Version&style=plastic) ![Docker Image Size](https://img.shields.io/docker/image-size/4mnrt/gsi?label=Docker%20image%20size&style=plastic)
-
-
 # rcs-gsi
 Repository for the Robotic Control System - Generic Services Image
 
