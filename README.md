@@ -108,10 +108,12 @@ See the following for more info - https://www.rabbitmq.com/configure.html
 If these settings are changed you need to rebuild the container images.
 
 
-## Workflows
-There are 3 workflows in operation and stored in [.github/workflows/](.github/workflows)
-* primary-workflow.yml - main testing workflow running pytest on gsi
-* flake8.yml - python linter for rmqclient
-* docker-publish.yml - triggered on release action to push gsi to dockerhub
+## Gitlab CI
+Workflows are defined in the `.gitlab-ci.yml` file;
 
-See [docs/workflows.md](docs/workflows.md) for more info.
+On merge requests;
+* pytest is run on the gsi container to send and receive messages from rmq
+* The python code in the repository is linted with flake8
+
+On release (or tagging)
+* both the gsi and rmq containers are built and pushed to the repository registry
