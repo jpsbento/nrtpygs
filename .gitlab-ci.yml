@@ -33,16 +33,16 @@ deploy:
     - docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}
     
 
-    - docker build -t ${CI_REGISTRY_IMAGE}/gsi:latest -t ${CI_REGISTRY_IMAGE}:tag -f ./docker/gsi/Dockerfile . 
-    - docker build -t ${CI_REGISTRY_IMAGE}/rmq:latest -t ${CI_REGISTRY_IMAGE}:tag -f ./docker/rmq/Dockerfile . 
+    - docker build -t ${CI_REGISTRY_IMAGE}/gsi:latest -t ${CI_REGISTRY_IMAGE}/gsi:tag -f ./docker/gsi/Dockerfile . 
+    - docker build -t ${CI_REGISTRY_IMAGE}/rmq:latest -t ${CI_REGISTRY_IMAGE}/rmq:tag -f ./docker/rmq/Dockerfile . 
 
 
-    - docker push {CI_REGISTRY_IMAGE}/gsi:latest
-    - docker push {CI_REGISTRY_IMAGE}/gsi:tag
+    - docker push ${CI_REGISTRY_IMAGE}/gsi:latest
+    - docker push ${CI_REGISTRY_IMAGE}/gsi:tag
       
       
-    - docker push {CI_REGISTRY_IMAGE}/rmq:latest
-    - docker push {CI_REGISTRY_IMAGE}/rmq:tag
+    - docker push ${CI_REGISTRY_IMAGE}/rmq:latest
+    - docker push ${CI_REGISTRY_IMAGE}/rmq:tag
     
 
 
