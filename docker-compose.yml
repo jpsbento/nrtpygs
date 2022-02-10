@@ -1,32 +1,32 @@
 version: '3.8'
 
 services:
-    gsi:
-        environment:
-          - PYTHONDONTWRITEBYTECODE=1
-        env_file:
-          - environment.env
-          - secret.env
-        build:
-            context: .
-            dockerfile: ./docker/gsi/Dockerfile
-        image: gsi
-        container_name: gsi
-        entrypoint: pytest -rx -p no:cacheprovider --capture=tee-sys --durations=3
-        volumes:
-            - ./rmqclient:/opt/code
-        depends_on:
-            - rmq
+  gsi:
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+    env_file:
+      - environment.env
+      - secret.env
+    build:
+      context: .
+      dockerfile: ./docker/gsi/Dockerfile
+    image: gsi
+    container_name: gsi
+    entrypoint: pytest -rx -p no:cacheprovider --capture=tee-sys --durations=0
+    #volumes:
+     # - ./rmqclient:/opt/code
+    depends_on:
+      - rmq
 
-    rmq:
-        env_file:
-          - environment.env
-          - secret.env
-        build:
-            context: .
-            dockerfile: ./docker/rmq/Dockerfile
-        image: rmq
-        container_name: rmq
-        ports:
-            - "5672:5672"
-            - "15672:15672"
+  rmq:
+    env_file:
+      - environment.env
+      - secret.env
+    build:
+      context: .
+      dockerfile: ./docker/rmq/Dockerfile
+    image: rmq
+    container_name: rmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"

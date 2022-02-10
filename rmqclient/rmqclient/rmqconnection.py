@@ -110,7 +110,7 @@ class RmqConnection():
             self.channel = None
         else:
             log.warning(
-                'Connection closed, reopening in 1 second: %s',
+                'Connection closed unexpectedly, reopening in 1 second: %s',
                 reason)
             self.connection.ioloop.call_later(1, self.connect)
 
