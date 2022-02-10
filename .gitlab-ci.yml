@@ -4,7 +4,6 @@ default:
 
 main-ci:
   only: 
-    - pushes
     - merge_requests
   image: docker/compose:latest
   script:
@@ -14,13 +13,12 @@ main-ci:
 
 linter:
   only:
-    - pushes
+    - merge_requests
   image: python:3.8.12-slim-buster
   script: 
     - python -m pip install --upgrade pip
     - pip install flake8
     - flake8
-
 
 deploy:
   only: 
