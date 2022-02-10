@@ -26,7 +26,8 @@ def consume_100_logs():
         ['#'],
         'LOG.complete',
         counter.callback,
-        durable=True)
+        durable=True
+    )
 
     # Allow time for messages to be consumed.
     time.sleep(2)
@@ -67,6 +68,5 @@ def test_pub_consume_logs():
 
 
 def test_pub_consume_tel():
-    rmqtel.disconnect()
-    # publish_100_telemetry()
-    # consume_100_telemetry()
+    publish_100_telemetry()
+    consume_100_telemetry()

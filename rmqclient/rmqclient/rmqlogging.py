@@ -46,9 +46,10 @@ class RmqLogging():
         # Wait for all messages to be sent
 
         while not self._logq.empty():
+            time.sleep(0.1)
             pass
         # Allow extra time for remaining messages to purge
-        time.sleep(1)
+        time.sleep(0.5)
         # Close the connection and rejoin the log thread
         self._rmqconnection.close()
         self._logThread.join()
@@ -71,7 +72,9 @@ class RmqLogging():
         """
         log.debug('Starting publish message loop')
         while True:
-            # Block if channel is reopening
+            # Stop the loop consuming all resource
+            # max rate 10kHz
+            time.sleep(0.0001)
             if self._await_reconnect:
                 self._await_new_channel()
 
@@ -119,14 +122,12 @@ def main():
     Used for an example of how logging can be used
     TODO: Make it as an end to end test?
     """
-    x = 1000
-    delay = 0
-    print('Sending {} mesages with {}s delay'.format(str(x), str(delay)))
-    print(datetime.datetime.now())
+    x = 100000
+    delay_ms = 0
+    print('Sending {} mesages with {}ms delay'.format(str(x), str(delay_ms)))
     for i in range(1, x + 1):
         rmqlog.log(1, 'This is a debug log number ' + str(i))
-        time.sleep(delay)
-    print(datetime.datetime.now())
+        time.sleep(delay_ms / 1000)
     print('Sent {} messages'.format(str(x)))
     rmqlog.disconnect()
 
