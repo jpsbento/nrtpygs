@@ -33,12 +33,13 @@ deploy:
     - export 
     - echo ${CI_COMMIT_TAG}
     - docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}
-    - docker build \
+    - |-
+      docker build \
         -t gsi:latest \
         -t gsi:${CI_COMMIT_TAG} \
         -f ./docker/gsi/Dockerfile . ;
 
-    - docker build \
+      docker build \
         -t rmq:latest \
         -t rmq:{CI_COMMIT_TAG} \
         -f ./docker/gsi/Dockerfile . ;
