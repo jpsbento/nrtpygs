@@ -5,6 +5,7 @@ default:
 main-ci:
   only: 
     - pushes
+    - merge_requests
 
   image: docker/compose:latest
 
@@ -25,10 +26,31 @@ linter:
 
 deploy:
   only: 
+    - push
     - tags
   image: docker:18.09-dind
   script:
+    - export 
     - echo ${CI_COMMIT_TAG}
     - docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}
+    - docker build \
+        -t gsi:latest\
+        -t gsi:${CI_COMMIT_TAG} \
+        -f ./docker/gsi/Dockerfile . ;
+
+    - docker build \
+        -t rmq:latest \
+        -t rmq:{CI_COMMIT_TAG} \
+        -f ./docker/gsi/Dockerfile . ;
+
+
+    - docker push ${CI_REGISTRY_IMAGE}:latest;  
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG};
+      
+      
+    - docker push ${CI_REGISTRY_IMAGE}:latest;
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA};
+    
+
 
 
