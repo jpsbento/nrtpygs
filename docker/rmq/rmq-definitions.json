@@ -30,7 +30,7 @@
     {
       "name": "rmq.sequencer",
       "vhost": "/",
-      "type": "topic",
+      "type": "direct",
       "durable": true,
       "auto_delete": false,
       "internal": false,
@@ -54,6 +54,22 @@
         "x-max-priority": 3,
         "x-queue-type": "classic"
       }
+    },
+    {
+      "name": "SEQ.complete",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments":
+      {}
+    },
+    {
+      "name": "SEQ.request",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments":
+      {}
     }
   ],
   "bindings": [
@@ -72,6 +88,24 @@
       "destination_type": "queue",
       "routing_key": "#",
       "arguments": {}
+    },
+    {
+      "source": "rmq.sequencer",
+      "vhost": "/",
+      "destination": "SEQ.complete",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments":
+      {}
+    },
+    {
+      "source": "rmq.sequencer",
+      "vhost": "/",
+      "destination": "SEQ.request",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments":
+      {}
     }
   ]
 }
