@@ -12,13 +12,13 @@ class CountMessages():
         self.messages += 1
 
 
-def publish_100_logs():
-    for i in range(1, 101):
+def publish_1000_logs():
+    for i in range(1, 1001):
         rmqlog.log(3, 'This is warning log number {}'.format(i))
     rmqlog.disconnect()
 
 
-def consume_100_logs():
+def consume_1000_logs():
     counter = CountMessages()
     consume = RmqConsume()
     consume.consume(
@@ -26,21 +26,22 @@ def consume_100_logs():
         ['#'],
         'LOG.complete',
         counter.callback,
-        durable=True)
+        durable=True
+    )
 
     # Allow time for messages to be consumed.
     time.sleep(2)
     consume.disconnect()
-    assert counter.messages == 100
+    assert counter.messages == 1000
 
 
-def publish_100_telemetry():
-    for i in range(1, 101):
+def publish_1000_telemetry():
+    for i in range(1, 1001):
         rmqtel.tel('TestValue', 122.3)
     rmqtel.disconnect()
 
 
-def consume_100_telemetry():
+def consume_1000_telemetry():
     counter = CountMessages()
     consume = RmqConsume()
     consume.consume(
@@ -58,15 +59,14 @@ def consume_100_telemetry():
     # Allow time for messages to be consumed.
     time.sleep(2)
     consume.disconnect()
-    assert counter.messages == 100
+    assert counter.messages == 1000
 
 
 def test_pub_consume_logs():
-    publish_100_logs()
-    consume_100_logs()
+    publish_1000_logs()
+    consume_1000_logs()
 
 
 def test_pub_consume_tel():
-    rmqtel.disconnect()
-    # publish_100_telemetry()
-    # consume_100_telemetry()
+    publish_1000_telemetry()
+    consume_1000_telemetry()

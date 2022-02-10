@@ -79,9 +79,10 @@ class RmqTelemetry():
         # Wait for all messages to be sent from queue
 
         while not self._telq.empty():
+            time.sleep(0.01)
             pass
         # Allow extra time for remaining messages to purge
-        time.sleep(1)
+        time.sleep(0.5)
         self._rmqconnection.close()
         self._telThread.join()
 
@@ -98,6 +99,7 @@ class RmqTelemetry():
         log.debug('Waiting on connection to reopen')
 
         while not self._connection.is_open:
+            time.sleep(0.1)
             self._connection = self._rmqconnection.get_connection()
 
         log.debug('Connection is open again, recreating channel')
@@ -109,6 +111,10 @@ class RmqTelemetry():
         """
         log.debug('Starting publish message loop')
         while True:
+            # Stop the loop consuming all resource
+            # max rate 10kHz
+            time.sleep(0.0001)
+
             if self._await_reconnect:
                 self._await_new_channel()
 
@@ -158,15 +164,15 @@ rmqtel = RmqTelemetry()
 
 def main():
     """
-    Used for an example of how telemetry is used
+    Used for an example of how telemetry is used and to check throughput
     """
     x = 10000
-    delay = 0
-    print('Sending {} telemetry mesages with {}s delay'
-          .format(str(x), str(delay)))
-    for i in range(1, x + 1):
+    delay_ms = 0
+    print('Sending {} telemetry mesages with {}ms delay'
+          .format(str(x), str(delay_ms)))
+    for i in range(1, x+1):
         rmqtel.tel('temp', 122.3)
-        time.sleep(delay)
+        time.sleep(delay_ms / 1000)
     print('Sent {} messages'.format(str(x)))
     time.sleep(1)
     rmqtel.disconnect()
