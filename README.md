@@ -99,7 +99,7 @@ changes to the code in the docker files needs to be made. Downloading of all
 dependencies and their configuration does not need to be repeated.
 
 ## Modifying Rabbitmq settings
-rmq is setup via `docker-compose.yml`, using the files in `docker/rmq/`. Here
+rmq is setup via `docker-compose.yml`, using the files in `images/rmq/`. Here
 there are shell scripts to set up the users. In addition, all settings of the
 rmq server can be specified in `rabbitmq.config` (general server settings)
 and `rmq-definitions.json` (exchange / binding / queue settings).
