@@ -9,7 +9,6 @@ RMQ_LOGFILE = 'rmqclient.log'
 
 # Service specific settings for the rmqclient
 TLA = os.environ['SER_TLA']
-USR = os.environ['SER_USR']
 
 # Maximum python queue size for logging and telemetry. 0=Inifinite
 LOGQ_MAX_SIZE = 0
