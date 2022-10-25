@@ -8,6 +8,7 @@ class RmqProducer():
     """
     Main Class for making calls to RabbitMQ
     """
+
     def __init__(self):
         """
         Set up the connection
@@ -30,7 +31,7 @@ class RmqProducer():
         }
 
         rmqlog.log(1, 'Starting RPC Call')
-        
+
         routing_key = TLA + '.producer'
         rmqlog.log(1, 'Sending request to {}'.format(routing_key))
 
