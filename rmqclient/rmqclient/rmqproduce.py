@@ -1,9 +1,7 @@
 from rmqclient.rmqconnection import RmqConnection
 from rmqclient.rmqlogging import rmqlog
-import pika
 import rmqclient.rmqsettings as settings
 import json
-import time
 
 
 class RmqProducer():
@@ -27,7 +25,7 @@ class RmqProducer():
         """
 
         body = {
-            'rpc': funcname,
+            'producer': funcname,
             'args': args,
         }
 
