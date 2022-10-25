@@ -36,6 +36,7 @@ TEL_PRIORITIES = {
 
 EXCHANGES = {
     'rpc': 'rmq.direct',
+    'produce': 'rmq.direct',
     'tel': 'rmq.telemetry',
     'log': 'rmq.logging',
 }
