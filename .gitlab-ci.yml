@@ -8,8 +8,8 @@ main-ci:
   image: docker/compose:latest
   script:
     - cp testsecret.env secret.env
-    - docker-compose up -d rmq
-    - docker-compose up gsi
+    - docker-compose up -d rmq --build
+    - docker-compose up gsi --build
 
 linter:
   only:
