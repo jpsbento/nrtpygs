@@ -22,7 +22,7 @@ class RmqProducer():
 
     def call(self, TLA, funcname, args=None):
         """
-        Send an RPC call and wait on responses
+        Send a call to RabbitMQ
         """
 
         body = {
