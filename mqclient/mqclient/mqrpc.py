@@ -1,7 +1,7 @@
-from mqclient.mqclient.mqconnection import MqConnection
-from mqclient.mqclient.mqlogging import rmqlog
+from mqclient.mqconnection import MqConnection
+from mqclient.mqlogging import rmqlog
 import pika
-import mqclient.mqclient.mqsettings as settings
+import mqclient.mqsettings as settings
 import json
 import time
 

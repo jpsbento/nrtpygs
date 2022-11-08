@@ -1,7 +1,7 @@
 import time
-from mqclient.mqclient.mqlogging import rmqlog
-from mqclient.mqclient.mqtelemetry import rmqtel
-from mqclient.mqclient.mqconsumer import MqConsume
+from mqclient.mqlogging import rmqlog
+from mqclient.mqtelemetry import rmqtel
+from mqclient.mqconsumer import MqConsume
 
 
 class CountMessages():

@@ -1,18 +1,18 @@
 import datetime
 import pika
-from mqclient.mqclient.mqconnection import MqConnection
+from mqclient.mqconnection import MqConnection
 import logging as log
 from queue import Queue
 import json
 import time
 import threading
 
-import mqclient.mqclient.mqsettings as settings
+import mqclient.mqsettings as settings
 
 
 class MqProducer():
 
-    def __init__(self):
+    def __init__(self, exchange = 'sequencer', routing_key = 'rmq.sequencer'):
         self._sent = 0
         self._sending_message = False
         self._stopping = False
@@ -21,7 +21,9 @@ class MqProducer():
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.get_channel()
         self._prodq = Queue(maxsize=settings.PROD_MAX_SIZE)
-
+        self.exchange = exchange
+        self.routing_key = routing_key
+        
         # Set up publish message thread.
         self._prodThread = threading.Thread(
             target=self._publish_message_loop,
@@ -38,6 +40,7 @@ class MqProducer():
             'message': message,
         }
         self._prodq.put(body)
+
 
     def disconnect(self):
         log.info('Disconnecting Production Connection')
@@ -98,8 +101,8 @@ class MqProducer():
         body = self._prodq.get(block=True, timeout=None)
         try:
             self._channel.basic_publish(
-                exchange=settings.EXCHANGES['sequencer'],
-                routing_key='rcs.' + settings.TLA,
+                exchange=settings.EXCHANGES[self.exchange],
+                routing_key=self.routing_key,
                 properties=settings.PROD_PROPERTIES,
                 body=json.dumps(body)
             )

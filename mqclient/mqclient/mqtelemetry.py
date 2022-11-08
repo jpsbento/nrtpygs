@@ -1,13 +1,13 @@
 import datetime
 import pika
-from mqclient.mqclient.mqconnection import MqConnection
+from mqclient.mqconnection import MqConnection
 import logging as log
 from queue import Queue
 import json
 import time
 import threading
 
-import mqclient.mqclient.mqsettings as settings
+import mqclient.mqsettings as settings
 
 
 class MqTelemetry():

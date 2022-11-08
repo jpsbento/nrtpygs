@@ -5,8 +5,8 @@ os.environ['RMQ_USER'] = "rmq-admin"
 os.environ['RMQ_PASS'] = "rmq-admin"
 os.environ['RMQ_HOST'] = "localhost"
 
-from mqclient.mqclient.mqproducer import MqProducer
-from mqclient.mqclient.mqtelemetry import MqTelemetry
+from mqclient.mqproducer import MqProducer
+from mqclient.mqtelemetry import MqTelemetry
 
 producer = MqProducer()
 print("Finished setting up client")
