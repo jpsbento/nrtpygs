@@ -113,3 +113,24 @@ class MqProducer():
             )
             self._await_reconnect = True
         self._sending_message = False
+
+
+
+
+def main():
+    """
+    Used for an example of how to use the producer 
+    to publish messages to a specific queue, because this uses a 
+    direct exchange
+    """
+    # Set up telemetry object 
+    rmqprod = MqProducer(exchange="sequencer", routing_key="SEQ.request")
+    data = {
+        "data": "test"
+    }
+    rmqprod.produce(data)
+    rmqprod.disconnect()
+
+
+if __name__ == '__main__':
+    main()
