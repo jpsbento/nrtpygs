@@ -36,7 +36,7 @@ done
 # First make the python path point to rmqclient
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 TOPDIR=${DIR/\/utils//}
-RMQDIR=${DIR/utils/rmqclient/}
+RMQDIR=${DIR/utils/mqclient/}
 echo "Adding $RMQDIR to PYTHONPATH"
 export PYTHONPATH=$PYTHONPATH:$RMQDIR
 
