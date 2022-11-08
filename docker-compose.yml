@@ -9,7 +9,7 @@ services:
       - secret.env
     build:
       context: .
-      dockerfile: ./docker/gsi/Dockerfile
+      dockerfile: ./images/containerfile
     image: gsi
     container_name: gsi
     entrypoint: pytest -rx -p no:cacheprovider --capture=tee-sys
@@ -24,7 +24,7 @@ services:
       - secret.env
     build:
       context: .
-      dockerfile: ./docker/rmq/Dockerfile
+      dockerfile: ./images/rmq/Dockerfile
     image: rmq
     container_name: rmq
     ports:
