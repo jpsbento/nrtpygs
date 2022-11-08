@@ -98,8 +98,8 @@ class RmqProducer():
         body = self._prodq.get(block=True, timeout=None)
         try:
             self._channel.basic_publish(
-                exchange=settings.EXCHANGES['produce'],
-                routing_key='rcs.' + settings.TLA + '.',
+                exchange=settings.EXCHANGES['sequencer'],
+                routing_key='rcs.' + settings.TLA,
                 properties=settings.PROD_PROPERTIES,
                 body=json.dumps(body)
             )
@@ -110,9 +110,3 @@ class RmqProducer():
             )
             self._await_reconnect = True
         self._sending_message = False
-
-
-# Set up telemetry object
-rmqproducer = RmqProducer()
-
-

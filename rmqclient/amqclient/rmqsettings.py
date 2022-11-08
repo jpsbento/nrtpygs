@@ -46,6 +46,7 @@ EXCHANGES = {
     'produce': 'rmq.direct',
     'tel': 'rmq.telemetry',
     'log': 'rmq.logging',
+    'sequencer': 'rmq.sequencer',
 }
 
 LOGLEVELS = {
