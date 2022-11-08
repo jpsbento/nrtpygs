@@ -8,6 +8,7 @@ main-ci:
   image: docker/compose:latest
   script:
     - cp testsecret.env secret.env
+    - docker-compose down
     - docker-compose up -d --build rmq 
     - docker-compose up --build gsi 
 
