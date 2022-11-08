@@ -8,8 +8,8 @@ main-ci:
   image: docker/compose:latest
   script:
     - cp testsecret.env secret.env
-    - docker-compose up -d rmq
-    - docker-compose up gsi
+    - docker-compose up -d --build rmq 
+    - docker-compose up --build gsi 
 
 linter:
   only:
@@ -20,24 +20,14 @@ linter:
     - pip install flake8
     - flake8
 
-deploy:
-  only: 
-    - tags
-  image: docker:18.09-dind
-  script:
-    - export 
-    - echo ${CI_COMMIT_TAG}
-    - docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}
-    
-    - docker build -t ${CI_REGISTRY_IMAGE}/gsi:latest -t ${CI_REGISTRY_IMAGE}/gsi:${CI_COMMIT_TAG} -f ./docker/gsi/Dockerfile . 
-    - docker build -t ${CI_REGISTRY_IMAGE}/rmq:latest -t ${CI_REGISTRY_IMAGE}/rmq:${CI_COMMIT_TAG} -f ./docker/rmq/Dockerfile . 
 
-    - docker push ${CI_REGISTRY_IMAGE}/gsi:latest
-    - docker push ${CI_REGISTRY_IMAGE}/gsi:${CI_COMMIT_TAG}
-            
-    - docker push ${CI_REGISTRY_IMAGE}/rmq:latest
-    - docker push ${CI_REGISTRY_IMAGE}/rmq:${CI_COMMIT_TAG}
-    
-
-
-
+include:
+  - project: 'nrt-crew/common/templates'
+    ref: develop
+    file: '/gitlab-ci/versioning.gitlab-ci.yml'
+  #- project: 'nrt-crew/common/templates'
+  #  ref: develop
+  #  file: '/gitlab-ci/helm-jobs.gitlab-ci.yml'
+  - project: 'nrt-crew/common/templates'
+    ref: develop
+    file: '/gitlab-ci/kaniko-jobs.gitlab-ci.yml'
