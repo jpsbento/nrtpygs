@@ -1,4 +1,9 @@
 {
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
   "exchanges": [
     {
       "name": "rmq.telemetry",
@@ -60,16 +65,14 @@
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
-      "arguments":
-      {}
+      "arguments": {}
     },
     {
       "name": "SEQ.request",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
-      "arguments":
-      {}
+      "arguments": {}
     }
   ],
   "bindings": [
@@ -95,17 +98,15 @@
       "destination": "SEQ.complete",
       "destination_type": "queue",
       "routing_key": "#",
-      "arguments":
-      {}
+      "arguments": {}
     },
     {
       "source": "rmq.sequencer",
       "vhost": "/",
       "destination": "SEQ.request",
       "destination_type": "queue",
-      "routing_key": "#",
-      "arguments":
-      {}
+      "routing_key": "rcs.TST",
+      "arguments": {}
     }
   ]
 }
