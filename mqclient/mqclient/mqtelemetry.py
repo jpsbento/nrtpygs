@@ -1,16 +1,16 @@
 import datetime
 import pika
-from rmqclient.rmqconnection import RmqConnection
+from mqclient.mqclient.mqconnection import MqConnection
 import logging as log
 from queue import Queue
 import json
 import time
 import threading
 
-import rmqclient.rmqsettings as settings
+import mqclient.mqclient.mqsettings as settings
 
 
-class RmqTelemetry():
+class MqTelemetry():
 
     def __init__(self):
         self._sent = 0
@@ -18,7 +18,7 @@ class RmqTelemetry():
         self._stopping = False
         self._await_reconnect = False
         log.debug('Initiating class')
-        self._rmqconnection = RmqConnection('rmqtelemetry')
+        self._rmqconnection = MqConnection('rmqtelemetry')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.get_channel()
         self._telq = Queue(maxsize=settings.LOGQ_MAX_SIZE)
@@ -159,7 +159,7 @@ class RmqTelemetry():
 
 
 # Set up telemetry object
-rmqtel = RmqTelemetry()
+rmqtel = MqTelemetry()
 
 
 def main():

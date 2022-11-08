@@ -5,11 +5,10 @@ os.environ['RMQ_USER'] = "rmq-admin"
 os.environ['RMQ_PASS'] = "rmq-admin"
 os.environ['RMQ_HOST'] = "localhost"
 
-from rmqclient.rmqproducer import RmqProducer
-from rmqclient.rmqtelemetry import RmqTelemetry
+from mqclient.mqclient.mqproducer import MqProducer
+from mqclient.mqclient.mqtelemetry import MqTelemetry
 
-producer = RmqProducer()
-#telemetry = RmqTelemetry()
+producer = MqProducer()
 print("Finished setting up client")
 
 
@@ -19,9 +18,6 @@ def submit_sequence():
     }
     try:
         producer.produce(data)
-        #telemetry.tel('Key','Value')
-        #producer.produce(data)
-        #producer.disconnect()
     except Exception as e:
         raise "Problem"
     return "Success"

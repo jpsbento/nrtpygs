@@ -3,7 +3,7 @@ import logging as log
 import os
 import threading
 import time
-import rmqclient.rmqsettings as settings
+import mqclient.mqclient.mqsettings as settings
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
@@ -23,7 +23,7 @@ log.basicConfig(
 log = log.getLogger(__name__)
 
 
-class RmqConnection():
+class MqConnection():
     """
     Class to provide connection and new channel options to the rmq server
     At present a single channel is opened and the object returned.
@@ -189,7 +189,7 @@ def main():
     container.
     """
     # Create the RmqConnection class
-    rmqconnection = RmqConnection('ConnectionNameHere')
+    rmqconnection = MqConnection('ConnectionNameHere')
 
     # Start connection and get connection handle.
     connection = rmqconnection.connect()

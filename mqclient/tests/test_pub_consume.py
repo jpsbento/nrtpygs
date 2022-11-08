@@ -1,7 +1,7 @@
 import time
-from rmqclient.rmqlogging import rmqlog
-from rmqclient.rmqtelemetry import rmqtel
-from rmqclient.rmqconsume import RmqConsume
+from mqclient.mqclient.mqlogging import rmqlog
+from mqclient.mqclient.mqtelemetry import rmqtel
+from mqclient.mqclient.mqconsumer import MqConsume
 
 
 class CountMessages():
@@ -20,7 +20,7 @@ def publish_1000_logs():
 
 def consume_1000_logs():
     counter = CountMessages()
-    consume = RmqConsume()
+    consume = MqConsume()
     consume.consume(
         'rmq.logging',
         ['#'],
@@ -43,7 +43,7 @@ def publish_1000_telemetry():
 
 def consume_1000_telemetry():
     counter = CountMessages()
-    consume = RmqConsume()
+    consume = MqConsume()
     consume.consume(
         'rmq.telemetry',
         ['#'],

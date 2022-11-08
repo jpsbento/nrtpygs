@@ -1,10 +1,10 @@
 import re
-from rmqclient.rmqconnection import RmqConnection
-import rmqclient.rmqsettings as settings
+from mqclient.mqclient.mqconnection import MqConnection
+import mqclient.mqclient.mqsettings as settings
 import logging as log
 
 
-class RmqConsume():
+class MqConsume():
     """
     Class to allow clients to subscribe to messages. On initiation the class
     will create a connection. At that point a client can setup multiple
@@ -24,14 +24,14 @@ class RmqConsume():
     """
 
     def __init__(self):
-        self._connection = RmqConnection('rmqconsumer')
+        self._connection = MqConnection('rmqconsumer')
         self._connection.connect()
         self._consumers = []
 
     def consume(self, exchange, binding_keys, queue_name,
                 callback, durable=False, arguments=None):
         # Set the queuename to hold the service TLA prefix
-        new_consumer = RmqConsumer(
+        new_consumer = MqConsumer(
             self._connection,
             exchange,
             binding_keys,
@@ -50,7 +50,7 @@ class RmqConsume():
         self._connection.close()
 
 
-class RmqConsumer():
+class MqConsumer():
     """
     The class for holding information on an individual consumer
     """
@@ -120,7 +120,7 @@ class ExampleConsume():
 
     def __init__(self):
         self._msgs_received = 0
-        consume = RmqConsume()
+        consume = MqConsume()
         consume.consume(
             'rmq.telemetry',
             ['#'],
