@@ -6,13 +6,12 @@ from queue import Queue
 import json
 import time
 import threading
-
 import mqclient.mqsettings as settings
 
 
 class MqProducer():
 
-    def __init__(self, exchange = 'sequencer', routing_key = 'rmq.sequencer'):
+    def __init__(self, exchange='sequencer', routing_key='rmq.sequencer'):
         self._sent = 0
         self._sending_message = False
         self._stopping = False
@@ -23,7 +22,7 @@ class MqProducer():
         self._prodq = Queue(maxsize=settings.PROD_MAX_SIZE)
         self.exchange = exchange
         self.routing_key = routing_key
-        
+
         # Set up publish message thread.
         self._prodThread = threading.Thread(
             target=self._publish_message_loop,
@@ -40,7 +39,6 @@ class MqProducer():
             'message': message,
         }
         self._prodq.put(body)
-
 
     def disconnect(self):
         log.info('Disconnecting Production Connection')
@@ -115,15 +113,13 @@ class MqProducer():
         self._sending_message = False
 
 
-
-
 def main():
     """
-    Used for an example of how to use the producer 
-    to publish messages to a specific queue, because this uses a 
+    Used for an example of how to use the producer
+    to publish messages to a specific queue, because this uses a
     direct exchange
     """
-    # Set up telemetry object 
+    # Set up telemetry object
     rmqprod = MqProducer(exchange="sequencer", routing_key="SEQ.request")
     data = {
         "data": "test"

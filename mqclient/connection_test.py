@@ -1,12 +1,10 @@
 import os
-os.environ['SER_TLA'] = "TST"
+from mqclient.mqproducer import MqProducer
 
+os.environ['SER_TLA'] = "TST"
 os.environ['RMQ_USER'] = "rmq-admin"
 os.environ['RMQ_PASS'] = "rmq-admin"
 os.environ['RMQ_HOST'] = "localhost"
-
-from mqclient.mqproducer import MqProducer
-from mqclient.mqtelemetry import MqTelemetry
 
 producer = MqProducer()
 print("Finished setting up client")
@@ -19,7 +17,7 @@ def submit_sequence():
     try:
         producer.produce(data)
     except Exception as e:
-        raise "Problem"
+        raise ("Problem: %s" % e)
     return "Success"
 
 
