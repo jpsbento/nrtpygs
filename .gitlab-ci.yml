@@ -2,14 +2,15 @@ default:
   tags:
     - runner-rcs-gsi 
 
-main-ci:
-  only: 
-    - merge_requests
-  image: docker/compose:latest
-  script:
-    - cp testsecret.env secret.env
-    - docker-compose up -d --build rmq 
-    - docker-compose up --build gsi 
+#main-ci:
+#  only: 
+#    - merge_requests
+#  image: docker/compose:latest
+#  script:
+#    - cp testsecret.env secret.env
+#    - docker-compose down
+#    - docker-compose up -d --build rmq 
+#    - docker-compose up --build gsi 
 
 linter:
   only:

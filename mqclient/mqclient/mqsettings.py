@@ -13,6 +13,7 @@ TLA = os.environ['SER_TLA']
 # Maximum python queue size for logging and telemetry. 0=Inifinite
 LOGQ_MAX_SIZE = 0
 TELQ_MAX_SIZE = 0
+PROD_MAX_SIZE = 1
 
 LOG_PROPERTIES = pika.BasicProperties(
     content_type='json',
@@ -21,6 +22,12 @@ LOG_PROPERTIES = pika.BasicProperties(
 )
 
 TEL_PROPERTIES = pika.BasicProperties(
+    content_type='json',
+    delivery_mode=2,
+    app_id=TLA
+)
+
+PROD_PROPERTIES = pika.BasicProperties(
     content_type='json',
     delivery_mode=2,
     app_id=TLA
@@ -39,6 +46,7 @@ EXCHANGES = {
     'produce': 'rmq.direct',
     'tel': 'rmq.telemetry',
     'log': 'rmq.logging',
+    'sequencer': 'rmq.sequencer',
 }
 
 LOGLEVELS = {

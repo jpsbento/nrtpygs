@@ -14,7 +14,7 @@ services:
     container_name: gsi
     entrypoint: pytest -rx -p no:cacheprovider --capture=tee-sys
     #volumes:
-     # - ./rmqclient:/opt/code
+     # - ./mqclient:/opt/code
     depends_on:
       - rmq
 

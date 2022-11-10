@@ -1,12 +1,12 @@
-from rmqclient.rmqconnection import RmqConnection
-from rmqclient.rmqlogging import rmqlog
+from mqclient.mqconnection import MqConnection
+from mqclient.mqlogging import rmqlog
 import pika
-import rmqclient.rmqsettings as settings
+import mqclient.mqsettings as settings
 import json
 import time
 
 
-class RmqRpcServer():
+class MqRpcServer():
     """
     Main RPC class for handling RPCs
     """
@@ -16,7 +16,7 @@ class RmqRpcServer():
         Set up the connection and consume callbacks
         """
         self.rmqlog = rmqlog
-        self.rmqconnection = RmqConnection('rpcserver')
+        self.rmqconnection = MqConnection('rpcserver')
         self.connection = self.rmqconnection.connect()
         self.channel = self.rmqconnection.get_channel()
         self._setup_consume()
@@ -94,7 +94,7 @@ class RmqRpcServer():
         time.sleep(0.2)
 
 
-class RmqRpcClient():
+class MqRpcClient():
     """
     Client Library for making RPC calls
     """
@@ -102,7 +102,7 @@ class RmqRpcClient():
         """
         Set up the connection
         """
-        self.rmqconnection = RmqConnection('rpcclient')
+        self.rmqconnection = MqConnection('rpcclient')
         self.connection = self.rmqconnection.connect()
         self.channel = self.rmqconnection.get_channel()
 
@@ -182,11 +182,11 @@ class RmqRpcClient():
 
 
 # Create class intances
-rpcserver = RmqRpcServer()
-rpcclient = RmqRpcClient()
+rpcserver = MqRpcServer()
+rpcclient = MqRpcClient()
 
 
-class RmqRpcBase():
+class MqRpcBase():
     """
     Base class for classes wishing to expose RPC functions.
     This at least shows what is required
