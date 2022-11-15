@@ -1,12 +1,12 @@
 import os
-from mqclient.mqproducer import MqProducer
 
 os.environ['SER_TLA'] = "TST"
-os.environ['RMQ_USER'] = "rmq-admin"
-os.environ['RMQ_PASS'] = "rmq-admin"
+os.environ['RMQ_USER'] = "guest"
+os.environ['RMQ_PASS'] = "guest"
 os.environ['RMQ_HOST'] = "localhost"
 
-producer = MqProducer()
+from mqclient.mqproducer import MqProducer
+producer = MqProducer(exchange="sequencer", routing_key="rcs.TST")
 print("Finished setting up client")
 
 
