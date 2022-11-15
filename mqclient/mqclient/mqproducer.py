@@ -16,7 +16,7 @@ class MqProducer():
         self._sending_message = False
         self._stopping = False
         self._await_reconnect = False
-        self._rmqconnection = MqConnection('rmqlogger')
+        self._rmqconnection = MqConnection('producer')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.get_channel()
         self._prodq = Queue(maxsize=settings.PROD_MAX_SIZE)
