@@ -1,4 +1,4 @@
-FROM python:3.11.0-alpine3.16 AS compile-image
+FROM python:3.10.8-alpine3.15 AS compile-image
 
 RUN mkdir -p /opt/code
 WORKDIR /opt/code
@@ -20,7 +20,7 @@ RUN pip3 install -r /opt/requirements.txt
 ########
 # This image is the runtime, will copy the dependencies from the other
 ########
-FROM python:3.11.0-alpine3.16 AS runtime-image
+FROM python:3.10.8-alpine3.15 AS runtime-image
 
 RUN mkdir -p /opt/
 
