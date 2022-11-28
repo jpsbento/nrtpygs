@@ -45,7 +45,9 @@ class MqConnection():
             credentials=CREDENTIALS,
             client_properties={
                 'connection_name': self.connection_name,
-            },)
+            },
+            heartbeat=600,
+            blocked_connection_timeout=300,)
 
         self.connection = pika.SelectConnection(
             parameters=parameters,
