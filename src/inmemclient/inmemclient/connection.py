@@ -11,7 +11,7 @@ REDIS_HOST=os.environ['REDIS_HOST']
 REDIS_USERNAME=os.environ['REDIS_USERNAME']
 REDIS_PASSWORD=os.environ['REDIS_PASSWORD']
 
-POOL = redis.ConnectionPool(host=os.environ['REDIS_HOST'], username=REDIS_USERNAME, password=REDIS_PASSWORD, port=6379, db=0)
+POOL = redis.ConnectionPool(host=os.environ['REDIS_HOST'], username=REDIS_USERNAME, password=REDIS_PASSWORD, port=6379)
 
 
 # Turn off pika info and Debug Level logging
@@ -41,7 +41,7 @@ class Connection():
         inside a thread and then return the connection
         """
 
-        self.connection = redis.Redis(connection_pool=self.pool)
+        self.connection = redis.RedisCluster(connection_pool=self.pool)
 
         log.debug('Connecting to %s', REDIS_HOST)
         # Wait to allow connection to open before returning
