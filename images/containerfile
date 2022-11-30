@@ -41,6 +41,8 @@ ENV PYTHONPATH='/opt/code:$PYTHONPATH'
 
 # Copy the code
 COPY --chown=rcs:rcs src/mqclient/ /opt/code/
+COPY --chown=rcs:rcs src/inmemclient/ /opt/code/
+
 
 # Set working directory
 WORKDIR /opt/code

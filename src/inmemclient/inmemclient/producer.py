@@ -21,8 +21,10 @@ class Producer():
         }
         log.debug('Setting key %s' % key)
         try: 
-            self._connection.publish(key, body)
-            self._connection.set(key,body)
+            log.debug('Publishing')
+            self._connection.publish(key, str(body))
+            log.debug('Setting')            
+            self._connection.set(key,str(body))
         except Exception as e:
             log.error('Unable to publish message for key %s: %s' % (key, e))
 
