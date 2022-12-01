@@ -41,7 +41,7 @@ class Connection():
         inside a thread and then return the connection
         """
 
-        self.connection = redis.RedisCluster(host=os.environ['REDIS_HOST'] + "-0", username=REDIS_USERNAME, password=REDIS_PASSWORD, port=6379)
+        self.connection = redis.RedisCluster(host=os.environ['REDIS_HOST'], username=REDIS_USERNAME, password=REDIS_PASSWORD, port=6379)
         
         log.debug('Connecting to %s', REDIS_HOST)
         # Wait to allow connection to open before returning
