@@ -32,17 +32,17 @@ class Connection():
     """
 
     def __init__(self):
-        self.pool = POOL
+        self._pool = POOL
         
-    @timeout_decorator.timeout(2)
+    @timeout_decorator.timeout(20)
     def connect(self):
         """
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
 
-        self.connection = redis.RedisCluster(connection_pool=self.pool)
-
+        self.connection = redis.RedisCluster(host=os.environ['REDIS_HOST'] + "-0", username=REDIS_USERNAME, password=REDIS_PASSWORD, port=6379)
+        
         log.debug('Connecting to %s', REDIS_HOST)
         # Wait to allow connection to open before returning
         while not self.connection.ping():
@@ -50,14 +50,14 @@ class Connection():
         log.debug('Connection opened')
         return self.connection
 
-    @timeout_decorator.timeout(2)
+    @timeout_decorator.timeout(20)
     def get_connection(self):
         while not self.connection.ping():
             time.sleep(0.1)
             pass
         return self.connection
 
-    @timeout_decorator.timeout(3)
+    @timeout_decorator.timeout(20)
     def close(self):
         log.debug('Closing Connection')
         if self.connection is not None:

@@ -6,8 +6,8 @@ import logging as log
 class Producer():
 
     def __init__(self):
-        self._connection = Connection()
-        self._connection = self._connection.connect()
+        self._cluster = Connection()
+        self._connection = self._cluster.connect()
         
         
     def publish(self, key, value):
