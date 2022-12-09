@@ -8,8 +8,7 @@ class Producer():
     def __init__(self):
         self._cluster = Connection()
         self._connection = self._cluster.connect()
-        
-        
+
     def publish(self, key, value):
         """
         Add message to python queue
@@ -20,14 +19,13 @@ class Producer():
             'value': value,
         }
         log.debug('Setting key %s' % key)
-        try: 
+        try:
             log.debug('Publishing')
             self._connection.publish(key, str(body))
-            log.debug('Setting')            
-            self._connection.set(key,str(body))
+            log.debug('Setting')
+            self._connection.set(key, str(body))
         except Exception as e:
             log.error('Unable to publish message for key %s: %s' % (key, e))
-
 
     def disconnect(self):
         log.info('Disconnecting Production Connection')
@@ -37,8 +35,6 @@ class Producer():
         # Close the connection and rejoin the log thread
         self._connection.close()
 
-
-    
 
 def main():
     """

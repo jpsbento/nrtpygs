@@ -1,17 +1,20 @@
 import logging as log
 import os
-import threading
 import time
 import inmemclient.settings as settings
 import redis
 import timeout_decorator
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
-REDIS_HOST=os.environ['REDIS_HOST']
-REDIS_USERNAME=os.environ['REDIS_USERNAME']
-REDIS_PASSWORD=os.environ['REDIS_PASSWORD']
+REDIS_HOST = os.environ['REDIS_HOST']
+REDIS_USERNAME = os.environ['REDIS_USERNAME']
+REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
 
-POOL = redis.ConnectionPool(host=os.environ['REDIS_HOST'], username=REDIS_USERNAME, password=REDIS_PASSWORD, port=6379)
+POOL = redis.ConnectionPool(
+    host=os.environ['REDIS_HOST'],
+    username=REDIS_USERNAME,
+    password=REDIS_PASSWORD,
+    port=6379)
 
 
 # Turn off pika info and Debug Level logging
@@ -33,7 +36,7 @@ class Connection():
 
     def __init__(self):
         self._pool = POOL
-        
+
     @timeout_decorator.timeout(20)
     def connect(self):
         """
@@ -41,8 +44,12 @@ class Connection():
         inside a thread and then return the connection
         """
 
-        self.connection = redis.RedisCluster(host=os.environ['REDIS_HOST'], username=REDIS_USERNAME, password=REDIS_PASSWORD, port=6379)
-        
+        self.connection = redis.RedisCluster(
+            host=os.environ['REDIS_HOST'],
+            username=REDIS_USERNAME,
+            password=REDIS_PASSWORD,
+            port=6379)
+
         log.debug('Connecting to %s', REDIS_HOST)
         # Wait to allow connection to open before returning
         while not self.connection.ping():
@@ -88,8 +95,8 @@ def main():
     connection = redis_connection.connect()
 
     # Send a message usong the channel handle inside the ioloop callback
-    connection.publish("key",'hello')
-    
+    connection.publish("key", 'hello')
+
     # Check if the connection is still open
     if connection.ping():
         redis_connection.close()

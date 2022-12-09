@@ -1,6 +1,4 @@
-import re
 from inmemclient.connection import Connection
-import inmemclient.settings as settings
 import logging as log
 
 
@@ -26,7 +24,7 @@ class Consume():
     def __init__(self):
         self._connection = Connection()
         self._connection.connect()
-        
+
     def consume(self, key, callback):
         # Set the queuename to hold the service TLA prefix
         new_consumer = Consumer(
@@ -61,8 +59,7 @@ class Consumer():
         """
         log.debug('Starting consume')
         pubsub = self._connection.pubsub()
-        pubsub.psubscribe(**{self._key:self._callback})
-        
+        pubsub.psubscribe(**{self._key: self._callback})
 
 
 class ExampleConsume():
@@ -75,7 +72,7 @@ class ExampleConsume():
         consume.consume(
             'rmq.telemetry',
             self.msgcallback,
-            
+
         )
 
     def msgcallback(self, ch, method, props, body):
