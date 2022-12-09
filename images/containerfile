@@ -13,7 +13,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN pip3 install --upgrade pip
 
 # Install other dependencies
-COPY mqclient/requirements.txt /opt/
+COPY images/requirements.txt /opt/
 RUN pip3 install -r /opt/requirements.txt
 
 
@@ -40,7 +40,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONPATH='/opt/code:$PYTHONPATH'
 
 # Copy the code
-COPY --chown=rcs:rcs mqclient/ /opt/code/
+COPY --chown=rcs:rcs src/mqclient/ /opt/code/
+COPY --chown=rcs:rcs src/inmemclient/ /opt/code/
+
 
 # Set working directory
 WORKDIR /opt/code
