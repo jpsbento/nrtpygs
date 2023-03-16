@@ -1,6 +1,6 @@
 import re
-from mqclient.mqconnection import MqConnection
-import mqclient.mqsettings as settings
+from mqconnection import MqConnection
+import mqsettings as settings
 import logging as log
 
 

@@ -1,4 +1,4 @@
-from inmemclient.connection import Connection
+from connection import Connection
 import logging as log
 
 
