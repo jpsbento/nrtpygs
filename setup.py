@@ -1,11 +1,18 @@
 from setuptools import setup, find_packages
+import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+version = '0.1.0'
+try:
+    version = os.environ['PYGS_VERSION']
+except KeyError:  # bamboo_buildNumber isn't defined, so we're not running in Bamboo
+    pass
+
 setup(
     name='nrtpygs',
-    version='0.1.0',
+    version=version,
     description='NRT Generic Services Python Package',
     author="Joao Bento",
     author_email="j.p.dasilvabento@ljmu.ac.uk",

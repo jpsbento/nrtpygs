@@ -1,0 +1,22 @@
+authenticate_with_GC_py_registry:
+  stage: build
+  image: google/cloud-sdk
+  script:
+    - echo "${GOOGLE_CLOUD_KEY_B64}" > key_encoded.json
+    - base64 --decode key_encoded.json > key.json
+    - gcloud auth activate-service-account nrt-artifact@nrtljmu.iam.gserviceaccount.com --key-file=key.json
+    - gcloud artifacts print-settings python --repository nrt-python-registry --location ${GC_REGION} | awk '/Insert the following snippet into your pip.conf/{flag=1; next} flag' > pip.conf
+  artifacts:
+    paths:
+      - pip.conf
+
+push_to_GC_py_registry:
+  needs: ["gitversioning", "build_wheel"]
+  stage: deploy
+  image:
+    name: python:3.10.10-slim-buster
+    entrypoint: [""]
+  before_script: []
+  script:
+    # Building Package
+  after_script: []

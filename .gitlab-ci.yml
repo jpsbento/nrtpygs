@@ -26,9 +26,3 @@ include:
   - project: 'nrt-crew/common/templates'
     ref: develop
     file: '/gitlab-ci/versioning.gitlab-ci.yml'
-  #- project: 'nrt-crew/common/templates'
-  #  ref: develop
-  #  file: '/gitlab-ci/helm-jobs.gitlab-ci.yml'
-  - project: 'nrt-crew/common/templates'
-    ref: develop
-    file: '/gitlab-ci/kaniko-jobs.gitlab-ci.yml'
