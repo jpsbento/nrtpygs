@@ -1,6 +1,6 @@
 import re
-from mqclient.mqconnection import MqConnection
-import mqclient.mqsettings as settings
+from nrtpygs.mqclient.mqconnection import MqConnection
+import nrtpygs.mqclient.mqsettings as settings
 import logging as log
 
 

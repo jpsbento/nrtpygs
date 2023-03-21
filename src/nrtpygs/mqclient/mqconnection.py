@@ -3,7 +3,7 @@ import logging as log
 import os
 import threading
 import time
-import mqclient.mqsettings as settings
+import nrtpygs.mqclient.mqsettings as settings
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
