@@ -1,5 +1,5 @@
 import datetime
-from connection import Connection
+from inmemclient.connection import Connection
 import logging as log
 
 

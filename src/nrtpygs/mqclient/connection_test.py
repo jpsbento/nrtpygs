@@ -1,4 +1,4 @@
-from src.nrtpygs.mqclient import MqProducer
+from mqclient.mqproducer import MqProducer
 import os
 
 os.environ['SER_TLA'] = "TST"

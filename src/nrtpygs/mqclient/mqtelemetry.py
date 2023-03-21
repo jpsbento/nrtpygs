@@ -1,6 +1,6 @@
 import datetime
 import pika
-from mqconnection import MqConnection
+from mqclient.mqconnection import MqConnection
 import logging as log
 from queue import Queue
 import json

@@ -1,7 +1,7 @@
 import logging as log
 import os
 import time
-import settings as settings
+import inmemclient.settings as settings
 import redis
 import timeout_decorator
 
