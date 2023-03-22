@@ -5,7 +5,7 @@ authenticate_with_GC_py_registry:
     - echo "${GOOGLE_CLOUD_KEY_B64}" > key_encoded.json
     - base64 --decode key_encoded.json > key.json
     - gcloud auth activate-service-account nrt-artifact@nrtljmu.iam.gserviceaccount.com --key-file=key.json
-    - gcloud artifacts print-settings python --repository nrt-python-registry --location ${GC_REGION} | awk '/Insert the following snippet into your pip.conf/{flag=1; next} flag' > pip.conf
+    - gcloud artifacts print-settings python --repository nrt-python-registry --location ${GC_REGION} --project ${GC_PROJECT_ID} | awk '/Insert the following snippet into your pip.conf/{flag=1; next} flag' > pip.conf
   artifacts:
     paths:
       - pip.conf
