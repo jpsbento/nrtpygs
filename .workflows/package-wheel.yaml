@@ -7,9 +7,9 @@ build_wheel:
   before_script: []
   script:
     # Building Package
-    - PYGS_VERSION=${_SEM_VER_} python3 setup.py clean bdist_wheel
-    - mv dist/nrtpygs-${_SEM_VER_}-py3-none-any.whl .
+    - PYGS_VERSION=${_MAJOR_MINOR_PATCH_} python3 setup.py clean bdist_wheel
+    - mv dist/nrtpygs-${_MAJOR_MINOR_PATCH_}-py3-none-any.whl .
   artifacts:
     paths:
-      - nrtpygs-${_SEM_VER_}-py3-none-any.whl
+      - nrtpygs-${_MAJOR_MINOR_PATCH_}-py3-none-any.whl
   after_script: []

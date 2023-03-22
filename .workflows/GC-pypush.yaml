@@ -24,5 +24,5 @@ push_to_GC_py_registry:
     # Registering pip with google artifact repo
     - pip install keyrings.google-artifactregistry-auth
     # Uploading package
-    - python -m twine upload --repository-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry nrtpygs-${_SEM_VER_}-py3-none-any.whl
+    - python -m twine upload --repository-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry nrtpygs-${_MAJOR_MINOR_PATCH_}-py3-none-any.whl
   after_script: []
