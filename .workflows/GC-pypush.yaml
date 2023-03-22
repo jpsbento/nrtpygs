@@ -1,5 +1,5 @@
 authenticate_with_GC_py_registry:
-  stage: build
+  stage: deploy
   image: google/cloud-sdk
   script:
     - echo "${GOOGLE_CLOUD_KEY_B64}" > key_encoded.json
@@ -16,7 +16,13 @@ push_to_GC_py_registry:
   image:
     name: python:3.10.10-slim-buster
     entrypoint: [""]
-  before_script: []
+  before_script:
+    - mkdir ~/.config/
+    - mkdir ~/.config/pip/
+    - cp pip.conf ~/.config/pip/pip.conf
   script:
-    # Building Package
+    # Registering pip with google artifact repo
+    - pip install keyrings.google-artifactregistry-auth
+    # Uploading package
+    - python -m twine upload --repository-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry nrtpygs-${_SEM_VER_}-py3-none-any.whl
   after_script: []
