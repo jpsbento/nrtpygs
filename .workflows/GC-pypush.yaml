@@ -11,7 +11,7 @@ authenticate_with_GC_py_registry:
       - pip.conf
 
 push_to_GC_py_registry:
-  needs: ["gitversioning", "build_wheel"]
+  needs: ["gitversioning", "build_wheel", "authenticate_with_GC_py_registry"]
   stage: deploy
   image:
     name: python:3.10.10-slim-buster
