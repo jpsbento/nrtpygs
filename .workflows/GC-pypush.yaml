@@ -26,5 +26,8 @@ push_to_GC_py_registry:
     - pip install keyrings.google-artifactregistry-auth
     - keyring --list-backends
     # Uploading package
+    - echo "${GOOGLE_CLOUD_KEY_B64}" > key_encoded.json
+    - base64 --decode key_encoded.json > key.json
+    - export GOOGLE_APPLICATION_CREDENTIALS=key.json
     - python -m twine upload --repository-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry nrtpygs-${_MAJOR_MINOR_PATCH_}-py3-none-any.whl
   after_script: []
