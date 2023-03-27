@@ -14,5 +14,5 @@ push_to_gitlab_py_registry:
       --username ${CI_DEPLOY_USER}
       --password ${CI_DEPLOY_PASSWORD}
       --repository-url ${CI_API_V4_URL}/projects/${HELM_PROJECT_REGISTRY_ID}/packages/pypi 
-      nrtpygs-${_MAJOR_MINOR_PATCH_}-py3-none-any.whl
+      nrtpygs-${_MAJOR_MINOR_PATCH_}-${CI_PIPELINE_IID}-py3-none-any.whl
   after_script: []
