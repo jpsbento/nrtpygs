@@ -10,5 +10,5 @@ gitlab_pull_test:
     #- echo "password ${CI_JOB_TOKEN}" >> ~/.netrc
   script:
     # Building Package
-    - pip install --extra-index-url https://${CI_DEPLOY_USER}:${CI_DEPLOY_PASSWORD}@${CI_API_V4_URL}/projects/${HELM_PROJECT_REGISTRY_ID}/packages/pypi/simple nrtpygs
+    - pip install --extra-index-url https://${CI_DEPLOY_USER}:${CI_DEPLOY_PASSWORD}@jardin.ll.iac.es:9443/api/v4/projects/${HELM_PROJECT_REGISTRY_ID}/packages/pypi/simple nrtpygs
   after_script: []
