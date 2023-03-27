@@ -29,3 +29,4 @@ include:
   - local: '.workflows/package-wheel.yaml'
   - local: '.workflows/GC-pypush.yaml'
   - local: '.workflows/gitlab-pypush.yaml'
+  - local: '.workflows/gitlab-pulltest.yaml'
