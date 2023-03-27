@@ -31,5 +31,5 @@ push_to_GC_py_registry:
     - export GOOGLE_APPLICATION_CREDENTIALS=key.json
     - >
       python -m twine upload --repository-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry 
-      nrtpygs-${_MAJOR_MINOR_PATCH_}-${CI_PIPELINE_IID}-py3-none-any.whl
+      nrtpygs-${_MAJOR_MINOR_PATCH_}.post${CI_PIPELINE_IID}-py3-none-any.whl
   after_script: []
