@@ -11,5 +11,5 @@ build_wheel:
     - mv dist/nrtpygs-${_MAJOR_MINOR_PATCH_}-py3-none-any.whl .
   artifacts:
     paths:
-      - nrtpygs-${_MAJOR_MINOR_PATCH_}-py3-none-any.whl
+      - nrtpygs-${_MAJOR_MINOR_PATCH_}-${CI_PIPELINE_IID}-py3-none-any.whl
   after_script: []
