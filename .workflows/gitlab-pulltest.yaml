@@ -4,11 +4,11 @@ gitlab_pull_test:
   image:
     name: python:3.10.10-slim-buster
     entrypoint: [""]
-  before_script:
-    - echo "machine ${CI_API_V4_URL}/projects/${HELM_PROJECT_REGISTRY_ID}/packages/pypi" > ~/.netrc
-    - echo "login gitlab-ci-token" >> ~/.netrc
-    - echo "password ${CI_JOB_TOKEN}" >> ~/.netrc
+  before_script: []
+    #- echo "machine ${CI_API_V4_URL}/projects/${HELM_PROJECT_REGISTRY_ID}/packages/pypi" > ~/.netrc
+    #- echo "login gitlab-ci-token" >> ~/.netrc
+    #- echo "password ${CI_JOB_TOKEN}" >> ~/.netrc
   script:
     # Building Package
-    - pip install nrtpygs
+    - pip install --extra-index-url https://${CI_DEPLOY_USER}:${CI_DEPLOY_PASSWORD}@${CI_API_V4_URL}/projects/${HELM_PROJECT_REGISTRY_ID}/packages/pypi/simple nrtpygs
   after_script: []
