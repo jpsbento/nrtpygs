@@ -16,5 +16,5 @@ gitlab_pull_test:
     - pip install keyrings.google-artifactregistry-auth
     - keyring --list-backends
     # Uploading package
-    - pip install --index-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry/simple nrtpygs
+    - pip install --index-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry/simple nrtpygs --version 0.25.3
   after_script: []
