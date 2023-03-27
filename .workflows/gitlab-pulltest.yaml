@@ -9,12 +9,8 @@ gitlab_pull_test:
     #- echo "login gitlab-ci-token" >> ~/.netrc
     #- echo "password ${CI_JOB_TOKEN}" >> ~/.netrc
   script:
-    # Building Package
-    - echo "${GOOGLE_CLOUD_KEY_B64}" > key_encoded.json
-    - base64 --decode key_encoded.json > key.json
-    - export GOOGLE_APPLICATION_CREDENTIALS=key.json
-    - pip install keyrings.google-artifactregistry-auth
-    - keyring --list-backends
     # Uploading package
-    - pip install --index-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry/simple nrtpygs --version 0.25.3
+    - echo "--extra-index-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry/simple" > requirements.txt
+    - echo "nrtpygs==0.25.3" >> requirements.txt
+    - pip install -r requirements.txt
   after_script: []
