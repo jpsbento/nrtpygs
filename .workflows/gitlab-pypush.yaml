@@ -1,4 +1,4 @@
-push_to_GC_py_registry:
+push_to_gitlab_py_registry:
   needs: ["gitversioning", "build_wheel"]
   stage: deploy
   image:
