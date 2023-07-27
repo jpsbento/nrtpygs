@@ -1,5 +1,5 @@
 import datetime
-from inmemclient.connection import Connection
+from nrtpygs.inmemclient.connection import Connection
 import logging as log
 
 

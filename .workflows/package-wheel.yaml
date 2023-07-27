@@ -1,0 +1,15 @@
+build_wheel:
+  needs: ["gitversioning"]
+  stage: build
+  image:
+    name: python:3.10.10-slim-buster
+    entrypoint: [""]
+  before_script: []
+  script:
+    # Building Package
+    - PYGS_VERSION=${_MAJOR_MINOR_PATCH_}.post${CI_PIPELINE_IID} python3 setup.py clean bdist_wheel
+    - mv dist/nrtpygs-${_MAJOR_MINOR_PATCH_}.post${CI_PIPELINE_IID}-py3-none-any.whl .
+  artifacts:
+    paths:
+      - nrtpygs-${_MAJOR_MINOR_PATCH_}.post${CI_PIPELINE_IID}-py3-none-any.whl
+  after_script: []
