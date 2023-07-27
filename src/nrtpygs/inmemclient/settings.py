@@ -2,7 +2,7 @@ import os
 import logging as log
 
 # Local logging settings
-LOGLEVEL = log.DEBUG
+LOGLEVEL = log.INFO
 LOGFILE = 'redisclient.log'
 
 # Service specific settings for the rmqclient
