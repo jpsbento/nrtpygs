@@ -27,13 +27,13 @@ These are the list of required environment variables your app or container must 
 
 SER_TLA=CSM    # A name for your app, that can be identified easily.
 
-RMQ_HOST=localhost  # The RabbitMQ server options
+RMQ_HOST=localhost  # The RabbitMQ server options if using rabbitmq
 RMQ_USER=rmq
 RMQ_PASS=rmq
 ADM_USER=rmq-admin
 ADM_PASS=rmq-admin
 
-REDIS_HOST=localhost    # The Redis parameters
+REDIS_HOST=localhost    # The Redis parameters if using redis
 REDIS_USERNAME=default
 REDIS_PASSWORD=redis_password
 
