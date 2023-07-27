@@ -1,6 +1,6 @@
 default:
   tags:
-    - runner-rcs-gsi 
+    - nrt
 
 #main-ci:
 #  only: 
