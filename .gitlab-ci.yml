@@ -21,6 +21,9 @@ linter:
     - pip install flake8
     - flake8
 
+variables:
+  _CONTAINERFILE_TARGET_: "containerfile"
+
 
 include:
   - project: 'nrt-crew/common/templates'
