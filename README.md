@@ -37,6 +37,14 @@ REDIS_HOST=localhost    # The Redis parameters if using redis
 REDIS_USERNAME=default
 REDIS_PASSWORD=redis_password
 
+
+INFLUX_HOST = influxhost    # The InfluxDB if using InfluxDB.
+INFLUX_PORT = influxport
+DOCKER_INFLUXDB_INIT_USERNAME = influxusername
+DOCKER_INFLUXDB_INIT_PASSWORD = influxpassword
+DOCKER_INFLUXDB_INIT_BUCKET = influxdb
+
+
 #### Using the module in the code
 
 Then, within your python code, simply import the module and use it. An example is below that consumes a rabbitmq message and publushes to redis. : 
