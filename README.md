@@ -1,119 +1,79 @@
 # rcs-gsi
-Repository for the Robotic Control System - Generic Services Image
+Repository for the Robotic Control System - Generic Services Python Module
 
 This repository contains;
-* The RabbitMQ definition and setup for the RCS containerised middleware -rmq
-* Code for rmqclient - The python Library for RCS services to communicate with rmq
-* Docker file to create the Genric Services Image which is used for RCS
-servcies - gsi
-* Github Actions workflows for automated testing and deployment
+* Code for an inmemory storage, such as Redis. 
+* Code for rmqclient - The python Library for RCS services to communicate with a 
 
-## Development workflow
-If you are going to be developing on this repository please see the notes in [docs/dev-workflow.md](docs/dev-workflow.md)
+This is structured to be the source code for a python module, which is built and deployed onto a 
+google cloud python registry automatically. 
 
-## Requirements
-* docker
-* docker-compose
+## Using this module
 
-## Usage
-A `secret.env` file needs to be created and stored in the top level of the
-directory. This contains the usernames and passwords for servcies to
-communicate with the rabbitmq server. This file is never tracked and should not
-be uploaded to github.
-For interagtion testing a testsecrets.env is used, so you will need to;
+#### Installation
 
-```shell
-cp testsecret.env secrets.env
-```
+In order to make use of this module, Simply either install the package using pip:
 
-### Starting rmq
+`pip install --index-url https://europe-west1-python.pkg.dev/nrtljmu/nrt-python-registry/simple/ nrtpygs`
 
-This will start rmq (RCS message queue) server in detatched mode.
+or add these lines to the requirements.txt file: 
 
-```shell
-docker-compose up -d rmq
-```
+`--extra-index-url https://europe-west1-python.pkg.dev/nrtljmu/nrt-python-registry/simple/`
+`nrtpygs==0.25.3`
 
-The rabbitmq server has the ports mapped locally for testing to localhost.
-The management interface can be accessed in a webrowser
-(i.e. http://127.0.0.1:15672/)
+#### Env variables
 
-The services in the test system can however communicate using friendly names
-within their own default bridge newtork. The rabbitmq host is addressed using
-an `RMQ_HOST` environment variable specified in `environment.env`.
+These are the list of required environment variables your app or container must have setup for this code to work:
 
-With the RabbitMQ connection port mapped `5672:5672`, test services can also
-be run locally connecting to the RabbitMQ server without having to be within
-the docker bridge network.
+SER_TLA=CSM    # A name for your app, that can be identified easily.
 
-### Starting gsi
+RMQ_HOST=localhost  # The RabbitMQ server options if using rabbitmq
+RMQ_USER=rmq
+RMQ_PASS=rmq
+ADM_USER=rmq-admin
+ADM_PASS=rmq-admin
 
-gsi is specified in the docker compose file to start with a pytest entrypoint.
-This means the container is run once. This will run pytest on the `opt/code/`
-directory, without creating any pytest cache files. Infact this is set up in the
-`docker-compose.yml` to map the local `rmqclient` directory to `opt/code/`. This means
-that code can be modified locally and tested in the container without requiring
-rebuild.
+REDIS_HOST=localhost    # The Redis parameters if using redis
+REDIS_USERNAME=default
+REDIS_PASSWORD=redis_password
+
+#### Using the module in the code
+
+Then, within your python code, simply import the module and use it. An example is below that consumes a rabbitmq message and publushes to redis. : 
 
 ```
-docker-compose up gsi
+from nrtpygs.mqclient.mqconsumer import MqConsume
+from nrtpygs.inmemclient.producer import Producer
+
+
+# Setting up a Rabbitmq consumer and a Redis producer 
+consume = MqConsume()
+redis_producer = Producer()
+log.info('Attempting connection now!')
+consume.consume(
+    EXCHANGE,
+    ['#'],
+    ROUTING_KEY,
+    msgcallback,
+    durable=True,
+    #arguments={
+    #    'x-queue-type': 'classic',
+    #    'x-max-priority': 3
+    #}
+)
+
+
+def msgcallback(self, ch, method, props, body):
+    print(props.app_id, body)
+    log.info('Message received. Content: %s' % body)
+    log.info('Pushing to Redis')
+    try:
+        redis_producer.publish("key", {'value':0, 'unit':'m/s'})
+    except Exception as e:
+        log.error('An error occured pushing payload to Redis: %s' % e)
+        return
+
 ```
 
-This command can actually be run on it's own without bringing up rmq, as gsi
-depends on rmq in the `docker-compose.yml`
 
-### Stopping / Restarting / Bringing Down the system
-This will stop the containers
-```shell
-docker-compose stop
-```
-
-This will Restart the conatiners
-```shell
-docker-compose start
-```
-
-This will stop and remove the conatiners
-```shell
-docker-compose down
-```
-
-### Rebuilding the system
-After making any changes to anything in the `docker` folder, you will need to
-rebuild the containers for this to take effect. This can be done with the
-following commands.
-
-```shell
-docker-compose down
-docker-compose build
-docker-compose up -d
-```
-or with the single command;
-
-```shell
-docker-compose up --build -d
-```
-
-**NOTE** Due to caching, this should only take a couple of seconds as only
-changes to the code in the docker files needs to be made. Downloading of all
-dependencies and their configuration does not need to be repeated.
-
-## Modifying Rabbitmq settings
-rmq is setup via `docker-compose.yml`, using the files in `images/rmq/`. Here
-there are shell scripts to set up the users. In addition, all settings of the
-rmq server can be specified in `rabbitmq.config` (general server settings)
-and `rmq-definitions.json` (exchange / binding / queue settings).
-See the following for more info - https://www.rabbitmq.com/configure.html
-
-If these settings are changed you need to rebuild the container images.
-
-
-## Gitlab CI
-Workflows are defined in the `.gitlab-ci.yml` file;
-
-On merge requests;
-* pytest is run on the gsi container to send and receive messages from rmq
-* The python code in the repository is linted with flake8
-
-On release (or tagging)
-* both the gsi and rmq containers are built and pushed to the repository registry
+More documentation is available by consulting the py-generic-services repository. 

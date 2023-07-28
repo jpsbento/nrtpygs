@@ -9,3 +9,7 @@ __pycache__/
 
 # envsecrets
 secret.env
+.idea/*
+build/*
+src/nrtpygs.egg*
+dist/*

@@ -1,6 +1,6 @@
 default:
   tags:
-    - runner-rcs-gsi 
+    - nrt
 
 #main-ci:
 #  only: 
@@ -28,4 +28,3 @@ include:
     file: '/gitlab-ci/versioning.gitlab-ci.yml'
   - local: '.workflows/package-wheel.yaml'
   - local: '.workflows/GC-pypush.yaml'
-  - local: '.workflows/gitlab-pypush.yaml'
