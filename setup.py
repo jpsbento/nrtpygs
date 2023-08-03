@@ -32,5 +32,6 @@ setup(
         "python-statemachine==0.8.0",
         "redis==4.3.4",
         "timeout_decorator==0.5.0",
+        "influxdb==5.3.1",
     ]
 )
