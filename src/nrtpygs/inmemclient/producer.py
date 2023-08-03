@@ -1,7 +1,7 @@
 import datetime
 from nrtpygs.inmemclient.connection import Connection
 import logging as log
-
+import json
 
 class Producer():
 
@@ -24,9 +24,9 @@ class Producer():
         log.debug('Setting key %s' % key)
         try:
             log.debug('Publishing')
-            self._connection.publish(key, str(body))
+            self._connection.publish(key, json.dumps(body))
             log.debug('Setting')
-            self._connection.set(key, str(body))
+            self._connection.set(key, json.dumps(body))
         except Exception as e:
             log.error('Unable to publish message for key %s: %s' % (key, e))
 
