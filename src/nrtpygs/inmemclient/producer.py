@@ -5,10 +5,10 @@ import logging as log
 
 class Producer():
 
-    def __init__(self, source='Unknown'):
+    def __init__(self, source='Unknown', cluster=True):
         self.source = source
         self._cluster = Connection()
-        self._connection = self._cluster.connect()
+        self._connection = self._cluster.connect(cluster=cluster)
         
 
     def publish(self, key, value):

@@ -38,18 +38,26 @@ class Connection():
         self._pool = POOL
 
     @timeout_decorator.timeout(20)
-    def connect(self):
+    def connect(self, cluster=True):
         """
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
+        
+        if cluster:
+            self.connection = redis.RedisCluster(
+                host=os.environ['REDIS_HOST'],
+                username=REDIS_USERNAME,
+                password=REDIS_PASSWORD,
+                port=6379)
 
-        self.connection = redis.RedisCluster(
-            host=os.environ['REDIS_HOST'],
-            username=REDIS_USERNAME,
-            password=REDIS_PASSWORD,
-            port=6379)
-
+        else:
+            self.connection = redis.Redis(
+                host=os.environ['REDIS_HOST'],
+                username=REDIS_USERNAME,
+                password=REDIS_PASSWORD,
+                port=6379)
+            
         log.debug('Connecting to %s', REDIS_HOST)
         # Wait to allow connection to open before returning
         while not self.connection.ping():
