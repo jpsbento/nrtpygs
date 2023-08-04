@@ -1,28 +1,12 @@
 import logging
 import os
 import timeout_decorator
-from influxdb import InfluxDBClient
+import influxdb_client
 
 # Configure the logging settings
 logging.basicConfig(filename='app.log', level=logging.ERROR,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-try:
-    # Connection parameters to the RabbitMQ server from ENV_VARS
-    INFLUX_HOST = os.environ['INFLUX_HOST']
-    INFLUX_PORT = os.environ['INFLUX_PORT']
-    INFLUX_USERNAME = os.environ['DOCKER_INFLUXDB_INIT_USERNAME']
-    INFLUX_PASSWORD = os.environ['DOCKER_INFLUXDB_INIT_PASSWORD']
-    INFLUX_DATABASE = os.environ['DOCKER_INFLUXDB_INIT_BUCKET']
-
-    # Your code for connecting to RabbitMQ server and other operations can go here
-
-except KeyError as e:
-    # Handle the case when any of the environment variables are missing
-    logging.error(f"Missing environment variable: {e}")
-except Exception as e:
-    # Handle other exceptions
-    logging.error(f"An unexpected error occurred: {e}")
 
 class Connection():
     """
@@ -31,13 +15,27 @@ class Connection():
     """
 
     def __init__(self):
-        self._host = INFLUX_HOST
-        self._port = INFLUX_PORT
-        self._username = INFLUX_USERNAME
-        self._password = INFLUX_PASSWORD
-        self._database = INFLUX_DATABASE
-        self.client = None
-        
+        try: 
+            self._host = os.environ['INFLUX_HOST']
+            self._port = os.environ['INFLUX_PORT']
+            self._username = os.environ['DOCKER_INFLUXDB_INIT_USERNAME']
+            self._password = os.environ['DOCKER_INFLUXDB_INIT_PASSWORD']
+            self.database = os.environ['DOCKER_INFLUXDB_INIT_BUCKET']
+            self._token = os.environ['DOCKER_INFLUXDB_INIT_ADMIN_TOKEN']
+            self._source = os.environ['SER_TLA']
+            self._org = 'NRT'
+            self.client = None
+        except KeyError as e:
+            # Handle the case when any of the environment variables are missing
+            logging.error(f"Missing environment variable: {e}")
+        except Exception as e:
+            # Handle other exceptions
+            logging.error(f"An unexpected error occurred: {e}")
+        # Format influxdb url to conform with the influxdb-client library requirement to have the full URL
+        self._url = "%s:%s" % (self._host, self._port)
+        if 'http' not in self._host:
+            self._url = "http://" + self._url
+            
     @timeout_decorator.timeout(20)
     def connect(self):
         """
@@ -45,9 +43,14 @@ class Connection():
         inside a thread and then return the connection
         """
 
-        logging.debug('Connecting to %s', INFLUX_HOST)
+        logging.debug('Connecting to %s', self._host)
         try:
-            self.client = InfluxDBClient(self._host, self._port, self._username, self._password, self._database)
+            self.client = influxdb_client.InfluxDBClient(
+                url=self._url,
+                token=self._token,
+                org=self._org
+                )
+        
             return self.client
         except:
             logging.error('Unable to connect to Influx Database')
