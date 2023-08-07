@@ -1,8 +1,8 @@
 from nrtpygs.inmemclient.connection import Connection
 import logging as log
+from operator import itemgetter
 
-
-class Consume():
+class Consumer():
     """
     Class to allow clients to subscribe to messages. On initiation the class
     will create a connection. At that point a client can setup multiple
@@ -21,46 +21,27 @@ class Consume():
         - callback
     """
 
-    def __init__(self):
+    def __init__(self, cluster=True):
         self._connection = Connection()
-        self._connection.connect()
-
-    def consume(self, key, callback):
-        # Set the queuename to hold the service TLA prefix
-        new_consumer = Consumer(
-            self._connection,
-            key,
-            callback,
-        )
-
-        self._consumers.append(new_consumer)
-
+        self._connection.connect(cluster=cluster)
+        self._consumers = []
+        
+    def subscribe(self, key: str, callback):
+        try:
+            pubsub = self._connection.connection.pubsub()
+            pubsub.psubscribe(**{key:callback})
+            thread = pubsub.run_in_thread(sleep_time=0.001)
+            self._customers.append(thread)
+        except Exception as e:
+            log.error('Unable to subscribe to channel %s: %s' % (key, e))
+            
     def get_consumers(self):
         return self._consumers
 
     def disconnect(self):
+        for thread in self._consumers:
+            thread.stop()
         self._connection.close()
-
-
-class Consumer():
-    """
-    The class for holding information on an individual consumer
-    """
-
-    def __init__(self, connection, key, callback):
-        self._connection = connection.get_connection()
-        self._key = key
-        self._callback = callback
-        self._consume()
-
-    def _consume(self):
-        """
-        Setting up a basic channel consumption
-        """
-        log.debug('Starting consume')
-        pubsub = self._connection.pubsub()
-        pubsub.psubscribe(**{self._key: self._callback})
-
 
 class ExampleConsume():
     """
@@ -68,19 +49,17 @@ class ExampleConsume():
     """
 
     def __init__(self):
-        consume = Consume()
-        consume.consume(
+        consume = Consumer()
+        consume.subscribe(
             'rmq.telemetry',
             self.msgcallback,
-
         )
 
-    def msgcallback(self, ch, method, props, body):
-        print(props.app_id, body)
-        self._msgs_received += 1
-        if self._msgs_received % 100 == 0:
-            print('Messages received', self._msgs_received)
-
+    def msgcallback(self, message: dict):
+        type, pattern, channel, data = itemgetter('type', 'pattern', 'channel', 'data')(message)
+        print('The data on this event is: %e' % str(data))
+        
+        
 
 def main():
     """
