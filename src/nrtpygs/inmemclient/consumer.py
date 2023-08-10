@@ -31,7 +31,8 @@ class Consumer():
             pubsub = self._connection.connection.pubsub()
             pubsub.psubscribe(**{key:callback})
             thread = pubsub.run_in_thread(sleep_time=0.001)
-            self._customers.append(thread)
+            self._consumers.append(thread)
+            log.info('Consuming %s on redis server' % key)
         except Exception as e:
             log.error('Unable to subscribe to channel %s: %s' % (key, e))
             
