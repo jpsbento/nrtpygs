@@ -1,5 +1,5 @@
 from nrtpygs.inmemclient.connection import Connection
-import logging as log
+from nrtpygs.logging import get_logger
 from operator import itemgetter
 
 class Consumer():
@@ -25,6 +25,7 @@ class Consumer():
         self._connection = Connection()
         self._connection.connect(cluster=cluster)
         self._consumers = []
+        self._logger = get_logger()
         
     def subscribe(self, key: str, callback):
         try:
@@ -32,9 +33,9 @@ class Consumer():
             pubsub.psubscribe(**{key:callback})
             thread = pubsub.run_in_thread(sleep_time=0.001)
             self._consumers.append(thread)
-            log.info('Consuming %s on redis server' % key)
+            self._logger.info('Consuming %s on redis server' % key)
         except Exception as e:
-            log.error('Unable to subscribe to channel %s: %s' % (key, e))
+            self._logger.error('Unable to subscribe to channel %s: %s' % (key, e))
             
     def get_consumers(self):
         return self._consumers
