@@ -30,8 +30,12 @@ class Producer():
                 for k, v in fields.items()
             ]
             self._logger.debug("Writing value %s" % str(data))
-            return self._write_api.write(bucket=self._influxdb.database, record=data)
+            return self._write_api.write(
+                bucket=self._influxdb.database, record=data
+                )
         except Exception as e:
             self._logger.error(
-                'Unable to write data for measurement %s: %s' % (str(fields), e)
+                'Unable to write data for measurement %s: %s' % (
+                    str(fields), e
+                    )
             )
