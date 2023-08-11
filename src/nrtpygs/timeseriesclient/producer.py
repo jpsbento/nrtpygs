@@ -1,7 +1,5 @@
-from datetime import datetime
 from nrtpygs.timeseriesclient.connection import Connection
 from nrtpygs.logging import get_logger
-import logging as log
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client import Point
 
@@ -23,10 +21,17 @@ class Producer():
         try:
             data = Point(self._influxdb._source)
             [data.tag(k, v) for k, v in tags.items()]
-            [data.field(k, v) if isinstance(v, (int, float)) else self._logger.debug(
-                f"Non-numerical value for.'{k}': {v} and therefore not added to influxDB") for k, v in fields.items()]
+            [
+                data.field(k, v) if isinstance(v, (int, float))
+                else self._logger.debug(
+                    f"Non-numerical value for '{k}': \
+                        {v} and not added to InfluxDB"
+                )
+                for k, v in fields.items()
+            ]
             self._logger.debug("Writing value %s" % str(data))
             return self._write_api.write(bucket=self._influxdb.database, record=data)
         except Exception as e:
-            self._logger.error('Unable to write data for measurement %s: %s' %
-                      (str(fields), e))
+            self._logger.error(
+                'Unable to write data for measurement %s: %s' % (str(fields), e)
+            )

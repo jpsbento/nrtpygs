@@ -43,7 +43,7 @@ class Connection():
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
-        
+
         if cluster:
             self.connection = redis.RedisCluster(
                 host=os.environ['REDIS_HOST'],
@@ -57,7 +57,7 @@ class Connection():
                 username=REDIS_USERNAME,
                 password=REDIS_PASSWORD,
                 port=6379)
-            
+
         log.debug('Connecting to %s', REDIS_HOST)
         # Wait to allow connection to open before returning
         while not self.connection.ping():
