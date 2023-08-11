@@ -2,6 +2,7 @@ from nrtpygs.inmemclient.connection import Connection
 from nrtpygs.logging import get_logger
 from operator import itemgetter
 
+
 class Consumer():
     """
     Class to allow clients to subscribe to messages. On initiation the class
@@ -26,17 +27,18 @@ class Consumer():
         self._connection.connect(cluster=cluster)
         self._consumers = []
         self._logger = get_logger()
-        
+
     def subscribe(self, key: str, callback):
         try:
             pubsub = self._connection.connection.pubsub()
-            pubsub.psubscribe(**{key:callback})
+            pubsub.psubscribe(**{key: callback})
             thread = pubsub.run_in_thread(sleep_time=0.001)
             self._consumers.append(thread)
             self._logger.info('Consuming %s on redis server' % key)
         except Exception as e:
-            self._logger.error('Unable to subscribe to channel %s: %s' % (key, e))
-            
+            self._logger.error(
+                'Unable to subscribe to channel %s: %s' % (key, e))
+
     def get_consumers(self):
         return self._consumers
 
@@ -44,6 +46,7 @@ class Consumer():
         for thread in self._consumers:
             thread.stop()
         self._connection.close()
+
 
 class ExampleConsume():
     """
@@ -58,10 +61,10 @@ class ExampleConsume():
         )
 
     def msgcallback(self, message: dict):
-        type, pattern, channel, data = itemgetter('type', 'pattern', 'channel', 'data')(message)
+        type, pattern, channel, data = itemgetter(
+            'type', 'pattern', 'channel', 'data')(message)
         print('The data on this event is: %e' % str(data))
-        
-        
+
 
 def main():
     """

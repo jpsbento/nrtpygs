@@ -15,7 +15,7 @@ class Connection():
     """
 
     def __init__(self):
-        try: 
+        try:
             self._host = os.environ['INFLUX_HOST']
             self._port = os.environ['INFLUX_PORT']
             self._username = os.environ['DOCKER_INFLUXDB_INIT_USERNAME']
@@ -35,7 +35,7 @@ class Connection():
         self._url = "%s:%s" % (self._host, self._port)
         if 'http' not in self._host:
             self._url = "http://" + self._url
-            
+
     @timeout_decorator.timeout(20)
     def connect(self):
         """
@@ -49,19 +49,17 @@ class Connection():
                 url=self._url,
                 token=self._token,
                 org=self._org
-                )
-        
+            )
+
             return self.client
         except:
             logging.error('Unable to connect to Influx Database')
-
-        
 
     @timeout_decorator.timeout(20)
     def get_client(self):
         if self.client.ping():
             return self.client
-        else: 
+        else:
             return None
 
     @timeout_decorator.timeout(20)
@@ -69,4 +67,3 @@ class Connection():
         if self.client:
             self.client.close()
             logging.debug('Connection to influxDB closed')
-

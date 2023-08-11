@@ -14,8 +14,9 @@ def configure_logging():
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
-    
+
     return logger
+
 
 def get_logger():
     # Just for a better name

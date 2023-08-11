@@ -3,13 +3,13 @@ from nrtpygs.inmemclient.connection import Connection
 import logging as log
 import json
 
+
 class Producer():
 
     def __init__(self, source='Unknown', cluster=True):
         self.source = source
         self._cluster = Connection()
         self._connection = self._cluster.connect(cluster=cluster)
-        
 
     def publish(self, key, value):
         """
