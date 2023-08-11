@@ -31,7 +31,7 @@ class Connection():
         except Exception as e:
             # Handle other exceptions
             logging.error(f"An unexpected error occurred: {e}")
-        # Format influxdb url to conform with the influxdb-client 
+        # Format influxdb url to conform with the influxdb-client
         # library requirement to have the full URL
         self._url = "%s:%s" % (self._host, self._port)
         if 'http' not in self._host:
