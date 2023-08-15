@@ -16,8 +16,8 @@ class Connection():
 
     def __init__(self):
         try:
-            self._host = os.environ['INFLUX_HOST']
-            self._port = os.environ['INFLUX_PORT']
+            # This needs the host and port in this format: http://localhost:8086
+            self._url = os.environ['INFLUX_HOST']
             self._username = os.environ['DOCKER_INFLUXDB_INIT_USERNAME']
             self._password = os.environ['DOCKER_INFLUXDB_INIT_PASSWORD']
             self.database = os.environ['DOCKER_INFLUXDB_INIT_BUCKET']
@@ -33,7 +33,6 @@ class Connection():
             logging.error(f"An unexpected error occurred: {e}")
         # Format influxdb url to conform with the influxdb-client
         # library requirement to have the full URL
-        self._url = "%s:%s" % (self._host, self._port)
         if 'http' not in self._host:
             self._url = "http://" + self._url
 
