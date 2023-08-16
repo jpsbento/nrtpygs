@@ -44,7 +44,7 @@ class Connection():
         inside a thread and then return the connection
         """
 
-        logging.debug('Connecting to %s', self._host)
+        logging.debug('Connecting to %s', self._url)
         try:
             self.client = influxdb_client.InfluxDBClient(
                 url=self._url,
