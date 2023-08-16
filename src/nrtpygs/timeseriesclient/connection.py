@@ -16,7 +16,8 @@ class Connection():
 
     def __init__(self):
         try:
-            # This needs the host and port in this format: http://localhost:8086
+            # This needs the host and port in this format:
+            # http://localhost:8086
             self._url = os.environ['INFLUX_HOST']
             self._username = os.environ['DOCKER_INFLUXDB_INIT_USERNAME']
             self._password = os.environ['DOCKER_INFLUXDB_INIT_PASSWORD']
