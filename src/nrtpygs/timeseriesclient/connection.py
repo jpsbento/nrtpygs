@@ -34,7 +34,7 @@ class Connection():
             logging.error(f"An unexpected error occurred: {e}")
         # Format influxdb url to conform with the influxdb-client
         # library requirement to have the full URL
-        if 'http' not in self._host:
+        if 'http' not in self._url:
             self._url = "http://" + self._url
 
     @timeout_decorator.timeout(20)
