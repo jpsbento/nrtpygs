@@ -1,7 +1,3 @@
-default:
-  tags:
-    - nrt
-
 #main-ci:
 #  only: 
 #    - merge_requests
