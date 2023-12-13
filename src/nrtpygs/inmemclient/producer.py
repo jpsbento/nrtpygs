@@ -1,13 +1,15 @@
 import datetime
 from nrtpygs.inmemclient.connection import Connection
 import logging as log
+import json
 
 
 class Producer():
 
-    def __init__(self):
+    def __init__(self, source='Unknown', cluster=True):
+        self.source = source
         self._cluster = Connection()
-        self._connection = self._cluster.connect()
+        self._connection = self._cluster.connect(cluster=cluster)
 
     def publish(self, key, value):
         """
@@ -16,14 +18,15 @@ class Producer():
         time = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
         body = {
             'timestamp': time,
+            'source': self.source,
             'value': value,
         }
         log.debug('Setting key %s' % key)
         try:
             log.debug('Publishing')
-            self._connection.publish(key, str(body))
+            self._connection.publish(key, json.dumps(body))
             log.debug('Setting')
-            self._connection.set(key, str(body))
+            self._connection.set(key, json.dumps(body))
         except Exception as e:
             log.error('Unable to publish message for key %s: %s' % (key, e))
 
