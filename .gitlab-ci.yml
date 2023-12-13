@@ -6,6 +6,7 @@ workflow:
 
 stages:
   - .pre
+  - authenticate
   - build
   - test
   - .post
