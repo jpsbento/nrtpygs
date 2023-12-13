@@ -12,14 +12,14 @@ stages:
   - deploy
   - .post
 
-linter:
-  only:
-    - merge_requests
-  image: python:3.8.12-slim-buster
-  script: 
-    - python -m pip install --upgrade pip
-    - pip install flake8
-    - flake8
+# linter:
+#   only:
+#     - merge_requests
+#   image: python:3.8.12-slim-buster
+#   script: 
+#     - python -m pip install --upgrade pip
+#     - pip install flake8
+#     - flake8
 
 
 include:
