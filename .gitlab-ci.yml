@@ -9,6 +9,7 @@ stages:
   - authenticate
   - build
   - test
+  - deploy
   - .post
 
 linter:
