@@ -27,11 +27,11 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "pika==1.1.0",
-        "pytest==6.2.1",
-        "python-statemachine==0.8.0",
-        "redis==4.3.4",
+        "pika==1.3.2",
+        "pytest==7.4.3",
+        "python-statemachine==2.1.2",
+        "redis==5.0.1",
         "timeout_decorator==0.5.0",
-        "influxdb-client==1.37.0",
+        "influxdb-client==1.39.0",
     ]
 )
