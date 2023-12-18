@@ -1,16 +1,16 @@
-default:
-  tags:
-    - nrt
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == 'push'
+      when: always
 
-#main-ci:
-#  only: 
-#    - merge_requests
-#  image: docker/compose:latest
-#  script:
-#    - cp testsecret.env secret.env
-#    - docker-compose down
-#    - docker-compose up -d --build rmq 
-#    - docker-compose up --build gsi 
+stages:
+  - .pre
+  - authenticate
+  - build
+  - test
+  - deploy
+  - .post
 
 linter:
   only:
