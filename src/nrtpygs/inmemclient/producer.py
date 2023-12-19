@@ -19,7 +19,7 @@ class Producer():
         body = {
             'timestamp': time,
             'source': self.source,
-            'value': value,
+            'content': value,
         }
         log.debug('Setting key %s' % key)
         try:
