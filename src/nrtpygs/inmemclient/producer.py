@@ -1,6 +1,6 @@
 import datetime
 from nrtpygs.inmemclient.connection import Connection
-import logging as log
+import nrtpygs.customlogger as log
 import json
 
 
@@ -10,6 +10,7 @@ class Producer():
         self.source = source
         self._cluster = Connection()
         self._connection = self._cluster.connect(cluster=cluster)
+        self._logger = log.get_logger()
 
     def publish(self, key, value):
         """
@@ -21,17 +22,17 @@ class Producer():
             'source': self.source,
             'content': value,
         }
-        log.debug('Setting key %s' % key)
+        self._logger.debug('Setting key %s' % key)
         try:
-            log.debug('Publishing')
+            self._logger.debug('Publishing')
             self._connection.publish(key, json.dumps(body))
-            log.debug('Setting')
+            self._logger.debug('Setting')
             self._connection.set(key, json.dumps(body))
         except Exception as e:
-            log.error('Unable to publish message for key %s: %s' % (key, e))
+            self._logger.error('Unable to publish message for key %s: %s' % (key, e))
 
     def disconnect(self):
-        log.info('Disconnecting Production Connection')
+        self._logger.info('Disconnecting Production Connection')
         self._stopping = True
         # Wait for all messages to be sent
 

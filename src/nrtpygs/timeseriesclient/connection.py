@@ -23,7 +23,6 @@ class Connection():
             self._password = os.environ['DOCKER_INFLUXDB_INIT_PASSWORD']
             self.database = os.environ['DOCKER_INFLUXDB_INIT_BUCKET']
             self._token = os.environ['DOCKER_INFLUXDB_INIT_ADMIN_TOKEN']
-            self._source = os.environ['SER_TLA']
             self._org = 'NRT'
             self.client = None
         except KeyError as e:

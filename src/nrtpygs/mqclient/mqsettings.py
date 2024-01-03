@@ -7,9 +7,6 @@ PIKA_LOGLEVEL = log.WARN
 RMQ_LOGLEVEL = log.DEBUG
 RMQ_LOGFILE = 'rmqclient.log'
 
-# Service specific settings for the rmqclient
-TLA = os.environ['SER_TLA']
-
 # Maximum python queue size for logging and telemetry. 0=Inifinite
 LOGQ_MAX_SIZE = 0
 TELQ_MAX_SIZE = 0
@@ -18,19 +15,16 @@ PROD_MAX_SIZE = 1
 LOG_PROPERTIES = pika.BasicProperties(
     content_type='json',
     delivery_mode=2,
-    app_id=TLA,
 )
 
 TEL_PROPERTIES = pika.BasicProperties(
     content_type='json',
     delivery_mode=2,
-    app_id=TLA
 )
 
 PROD_PROPERTIES = pika.BasicProperties(
     content_type='json',
     delivery_mode=2,
-    app_id=TLA
 )
 
 # Priorities for RabbitMQ Priority Queues

@@ -185,7 +185,6 @@ def main():
     - RMQ_USER
     - RMQ_PASS
     - RMQ_HOST
-    - SER_TLA
 
     See rcs-gsi/utils.setenv.sh for a tool to do this outside of the 4mnrt/gsi
     container.

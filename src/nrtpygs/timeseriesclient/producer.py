@@ -1,5 +1,5 @@
 from nrtpygs.timeseriesclient.connection import Connection
-from nrtpygs.logging import get_logger
+from nrtpygs.customlogger import get_logger
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client import Point
 
