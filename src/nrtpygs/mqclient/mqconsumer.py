@@ -1,6 +1,5 @@
 import re
 from nrtpygs.mqclient.mqconnection import MqConnection
-import nrtpygs.mqclient.mqsettings as settings
 import logging as log
 
 
@@ -63,8 +62,7 @@ class MqConsumer():
         self._exchange = exchange
         self._binding_keys = binding_keys
         if not re.search(r'^[A-Z]{3}', queue_name):
-            queue_name = settings.TLA + '.' + queue_name
-        self._queue_name = queue_name
+            self._queue_name = queue_name
         self._callback = callback
         self._durable = durable
         self._arguments = arguments

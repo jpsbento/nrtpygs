@@ -1,12 +1,11 @@
 import datetime
 import pika
 from nrtpygs.mqclient.mqconnection import MqConnection
-import logging as log
+import nrtpygs.customlogger as log
 from queue import Queue
 import json
 import time
 import threading
-import nrtpygs.mqclient.mqsettings as settings
 
 
 class MqProducer():
@@ -19,9 +18,10 @@ class MqProducer():
         self._rmqconnection = MqConnection('producer')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.get_channel()
-        self._prodq = Queue(maxsize=settings.PROD_MAX_SIZE)
+        self._prodq = Queue(maxsize=0)
         self.exchange = exchange
         self.routing_key = routing_key
+        self._logger = log.get_logger()
 
         # Set up publish message thread.
         self._prodThread = threading.Thread(
@@ -41,7 +41,7 @@ class MqProducer():
         self._prodq.put(body)
 
     def disconnect(self):
-        log.info('Disconnecting Production Connection')
+        self._logger.info('Disconnecting Production Connection')
         self._stopping = True
         # Wait for all messages to be sent
 
@@ -58,19 +58,19 @@ class MqProducer():
         """
         Await RmqConnection to reconnect and create a new channel
         """
-        log.info('Awaiting channel recreation')
-        log.debug('Waiting on connection to reopen')
+        self._logger.info('Awaiting channel recreation')
+        self._logger.debug('Waiting on connection to reopen')
         self._connection = self._rmqconnection.get_connection()
-        log.debug('Connection is open again')
+        self._logger.debug('Connection is open again')
         self._channel = self._rmqconnection.get_channel()
-        log.debug('Channel is open again')
+        self._logger.debug('Channel is open again')
         self._await_reconnect = False
 
     def _publish_message_loop(self):
         """
         Single thread function to read prodq and publish messages
         """
-        log.debug('Starting publish message loop')
+        self._logger.debug('Starting publish message loop')
         while True:
             # Stop the loop consuming all resource
             # max rate 10kHz
@@ -83,7 +83,7 @@ class MqProducer():
                 self._connection.ioloop.add_callback(self._publish_message)
                 self._sent += 1
                 if self._sent % 1000 == 0:
-                    log.debug(
+                    self._logger.debug(
                         'Published {} messages. Queuesize is {}'
                         .format(self._sent, self._prodq.qsize())
                     )
@@ -99,14 +99,17 @@ class MqProducer():
         body = self._prodq.get(block=True, timeout=None)
         try:
             self._channel.basic_publish(
-                exchange=settings.EXCHANGES[self.exchange],
+                exchange=self.exchange,
                 routing_key=self.routing_key,
-                properties=settings.PROD_PROPERTIES,
+                properties=pika.BasicProperties(
+                    content_type='json',
+                    delivery_mode=2,
+                ),
                 body=json.dumps(body)
             )
 
         except pika.exceptions.ChannelWrongStateError:
-            log.error(
+            self._logger.error(
                 'Error sending message (ChannelWrongState), reconnecting'
             )
             self._await_reconnect = True
