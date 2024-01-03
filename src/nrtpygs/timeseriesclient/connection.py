@@ -1,10 +1,10 @@
-import logging
+import nrtpygs.customlogger as log
 import os
 import timeout_decorator
 import influxdb_client
 
 # Configure the logging settings
-logging.basicConfig(filename='app.log', level=logging.ERROR,
+self._logger.basicConfig(filename='app.log', level=self._logger.ERROR,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 
@@ -25,12 +25,14 @@ class Connection():
             self._token = os.environ['DOCKER_INFLUXDB_INIT_ADMIN_TOKEN']
             self._org = 'NRT'
             self.client = None
+            self._logger = log.get_logger()
+            
         except KeyError as e:
             # Handle the case when any of the environment variables are missing
-            logging.error(f"Missing environment variable: {e}")
+            self._logger.error(f"Missing environment variable: {e}")
         except Exception as e:
             # Handle other exceptions
-            logging.error(f"An unexpected error occurred: {e}")
+            self._logger.error(f"An unexpected error occurred: {e}")
         # Format influxdb url to conform with the influxdb-client
         # library requirement to have the full URL
         if 'http' not in self._url:
@@ -43,7 +45,7 @@ class Connection():
         inside a thread and then return the connection
         """
 
-        logging.debug('Connecting to %s', self._url)
+        self._logger.debug('Connecting to %s', self._url)
         try:
             self.client = influxdb_client.InfluxDBClient(
                 url=self._url,
@@ -53,7 +55,7 @@ class Connection():
 
             return self.client
         except Exception as e:
-            logging.error('Unable to connect to Influx Database: %s' % e)
+            self._logger.error('Unable to connect to Influx Database: %s' % e)
 
     @timeout_decorator.timeout(20)
     def get_client(self):
@@ -66,4 +68,4 @@ class Connection():
     def close(self):
         if self.client:
             self.client.close()
-            logging.debug('Connection to influxDB closed')
+            self._logger.debug('Connection to influxDB closed')

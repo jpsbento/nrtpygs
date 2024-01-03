@@ -1,5 +1,5 @@
 from nrtpygs.timeseriesclient.connection import Connection
-from nrtpygs.customlogger import get_logger
+import nrtpygs.customlogger as log
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client import Point
 
@@ -11,7 +11,7 @@ class Producer():
         self._influxClient = self._influxdb.connect()
         self._write_api = self._influxClient.write_api(
             write_options=SYNCHRONOUS)
-        self._logger = get_logger()
+        self._logger = log.get_logger()
 
     def write(self, fields, tags={"site": "nrt"}):
         """
