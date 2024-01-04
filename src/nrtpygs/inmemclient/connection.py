@@ -16,10 +16,6 @@ POOL = redis.ConnectionPool(
     port=6379)
 
 
-log.getLogger()
-
-
-
 class Connection():
     """
     Class to provide connection and new channel options to the redis server
@@ -28,6 +24,7 @@ class Connection():
 
     def __init__(self):
         self._pool = POOL
+        self._logger = log.get_logger()
 
     @timeout_decorator.timeout(20)
     def connect(self, cluster=True):
@@ -50,11 +47,11 @@ class Connection():
                 password=REDIS_PASSWORD,
                 port=6379)
 
-        log.debug('Connecting to %s', REDIS_HOST)
+        self._logger.debug('Connecting to %s', REDIS_HOST)
         # Wait to allow connection to open before returning
         while not self.connection.ping():
             pass
-        log.debug('Connection opened')
+        self._logger.debug('Connection opened')
         return self.connection
 
     @timeout_decorator.timeout(20)
@@ -66,7 +63,7 @@ class Connection():
 
     @timeout_decorator.timeout(20)
     def close(self):
-        log.debug('Closing Connection')
+        self._logger.debug('Closing Connection')
         if self.connection is not None:
             self.connection.close()
         # Block until connection closes
