@@ -1,7 +1,7 @@
 import datetime
 import pika
 from nrtpygs.mqclient.mqconnection import MqConnection
-import logging as log
+import nrtpygs.customlogger as log
 from queue import Queue
 import json
 import time
@@ -15,7 +15,8 @@ class MqTelemetry():
         self._sending_message = False
         self._stopping = False
         self._await_reconnect = False
-        log.debug('Initiating class')
+        self._logger = log.get_logger()
+        self._logger.debug('Initiating class')
         self._rmqconnection = MqConnection('rmqtelemetry')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.get_channel()
@@ -72,7 +73,7 @@ class MqTelemetry():
         self._telq.put(body)
 
     def disconnect(self):
-        log.info('Disconnecting Telemetry Connection')
+        self._logger.info('Disconnecting Telemetry Connection')
         self._stopping = True
         # Wait for all messages to be sent from queue
 
@@ -88,26 +89,26 @@ class MqTelemetry():
         """
         Recreate the channel if there is a publish error
         """
-        log.info('Trying to recreate the channel')
+        self._logger.info('Trying to recreate the channel')
         try:
             self._channel.close()
         except Exception as e:
-            log.error('Received Exception on channel close: {}'.format(e))
+            self._logger.error('Received Exception on channel close: {}'.format(e))
         # Wait until Connection reopens if it was a channel issue;
-        log.debug('Waiting on connection to reopen')
+        self._logger.debug('Waiting on connection to reopen')
 
         while not self._connection.is_open:
             time.sleep(0.1)
             self._connection = self._rmqconnection.get_connection()
 
-        log.debug('Connection is open again, recreating channel')
+        self._logger.debug('Connection is open again, recreating channel')
         self._channel = self._rmqconnection.create_channel()
 
     def _publish_message_loop(self):
         """
         Single thread function to read logq and publish log messages
         """
-        log.debug('Starting publish message loop')
+        self._logger.debug('Starting publish message loop')
         while True:
             # Stop the loop consuming all resource
             # max rate 10kHz
@@ -121,7 +122,7 @@ class MqTelemetry():
                 self._connection.ioloop.add_callback(self._publish_message)
                 self._sent += 1
                 if self._sent % 1000 == 0:
-                    log.debug(
+                    self._logger.debug(
                         'Published {} telemetry messages. Queuesize is {}'
                         .format(self._sent, self._telq.qsize())
                     )
@@ -152,7 +153,7 @@ class MqTelemetry():
                 body=json.dumps(body)
             )
         except pika.exceptions.ChannelWrongStateError:
-            log.error(
+            self._logger.error(
                 'Error sending message (ChannelWrongState), reconnecting.'
             )
             self._await_reconnect = True

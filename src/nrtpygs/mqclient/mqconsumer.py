@@ -1,7 +1,6 @@
 import re
 from nrtpygs.mqclient.mqconnection import MqConnection
-import logging as log
-
+import nrtpygs.customlogger as log
 
 class MqConsume():
     """
@@ -67,6 +66,7 @@ class MqConsumer():
         self._durable = durable
         self._arguments = arguments
         self._setup_consume()
+        self._logger = log.get_logger()
 
     def _setup_consume(self):
         self._create_channel()
@@ -78,7 +78,7 @@ class MqConsumer():
         self._channel = self._rmqconnection.create_channel()
 
     def _create_queue(self):
-        log.debug('Creating queue {}'.format(self._queue_name))
+        self._logger.debug('Creating queue {}'.format(self._queue_name))
         self._channel.queue_declare(
             queue=self._queue_name,
             durable=self._durable,
@@ -88,7 +88,7 @@ class MqConsumer():
     def _setup_bindings(self):
         # First delete any previous bindings. This allows code updates
         # to take effect without getting old messages routed.
-        log.debug('Setting up bindings')
+        self._logger.debug('Setting up bindings')
         # Then rebind the keys
         for binding_key in self._binding_keys:
             self._channel.queue_bind(
@@ -103,7 +103,7 @@ class MqConsumer():
         Being asyncronous we don't need a
         pika.Channel.start_consuming() method
         """
-        log.debug('Starting consume')
+        self._logger.debug('Starting consume')
         self._channel.basic_consume(
             queue=self._queue_name,
             on_message_callback=self._callback,
