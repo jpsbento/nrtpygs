@@ -7,8 +7,6 @@ import json
 import time
 import threading
 
-import nrtpygs.mqclient.mqsettings as settings
-
 
 class MqTelemetry():
 
@@ -21,7 +19,7 @@ class MqTelemetry():
         self._rmqconnection = MqConnection('rmqtelemetry')
         self._connection = self._rmqconnection.connect()
         self._channel = self._rmqconnection.get_channel()
-        self._telq = Queue(maxsize=settings.LOGQ_MAX_SIZE)
+        self._telq = Queue(maxsize=0)
 
         # Set up publish message thread.
         self._telThread = threading.Thread(
@@ -137,15 +135,18 @@ class MqTelemetry():
         then recreate the send channel on the autoreconnected connection
         """
         body = self._telq.get(block=True, timeout=None)
-        routing_key = 'rcs.' + settings.TLA + '.' \
+        routing_key = 'rcs.telemetry.' \
                       + body['type'] + '.' + body['name']
-        priority = settings.TEL_PRIORITIES[body['type']]
-        properties = settings.TEL_PROPERTIES
+        priority = 1
+        properties = pika.BasicProperties(
+            content_type='json',
+            delivery_mode=2,
+        )
         properties.priority = priority
 
         try:
             self._channel.basic_publish(
-                exchange=settings.EXCHANGES['tel'],
+                exchange='rmq.telemetry',
                 routing_key=routing_key,
                 properties=properties,
                 body=json.dumps(body)

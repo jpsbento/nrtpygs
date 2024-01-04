@@ -1,7 +1,6 @@
-import logging as log
+import nrtpygs.customlogger as log
 import os
 import time
-import nrtpygs.inmemclient.settings as settings
 import redis
 import timeout_decorator
 
@@ -11,26 +10,19 @@ REDIS_USERNAME = os.environ['REDIS_USERNAME']
 REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
 
 POOL = redis.ConnectionPool(
-    host=os.environ['REDIS_HOST'],
+    host=REDIS_HOST,
     username=REDIS_USERNAME,
     password=REDIS_PASSWORD,
     port=6379)
 
 
-# Turn off pika info and Debug Level logging
-log.getLogger('redis').setLevel(settings.LOGLEVEL)
-log.basicConfig(
-    filename=settings.LOGFILE,
-    level=settings.LOGLEVEL,
-    format='%(asctime)s: %(name)s: %(levelname)s: %(message)s')
+log.getLogger()
 
-# TODO: Test what this does!
-log = log.getLogger(__name__)
 
 
 class Connection():
     """
-    Class to provide connection and new channel options to the rmq server
+    Class to provide connection and new channel options to the redis server
     At present a single channel is opened and the object returned.
     """
 

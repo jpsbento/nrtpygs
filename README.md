@@ -25,8 +25,6 @@ or add these lines to the requirements.txt file:
 
 These are the list of required environment variables your app or container must have setup for this code to work:
 
-SER_TLA=CSM    # A name for your app, that can be identified easily.
-
 RMQ_HOST=localhost  # The RabbitMQ server options if using rabbitmq
 RMQ_USER=rmq
 RMQ_PASS=rmq

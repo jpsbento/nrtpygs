@@ -1,5 +1,5 @@
 from nrtpygs.inmemclient.connection import Connection
-from nrtpygs.logging import get_logger
+import nrtpygs.customlogger as log
 from operator import itemgetter
 
 
@@ -26,7 +26,7 @@ class Consumer():
         self._connection = Connection()
         self._connection.connect(cluster=cluster)
         self._consumers = []
-        self._logger = get_logger()
+        self._logger = log.get_logger()
 
     def subscribe(self, key: str, callback):
         try:

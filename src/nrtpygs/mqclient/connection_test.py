@@ -1,7 +1,6 @@
 from nrtpygs.mqclient.mqproducer import MqProducer
 import os
 
-os.environ['SER_TLA'] = "TST"
 os.environ['RMQ_USER'] = "guest"
 os.environ['RMQ_PASS'] = "guest"
 os.environ['RMQ_HOST'] = "localhost"

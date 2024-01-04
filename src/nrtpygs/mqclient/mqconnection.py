@@ -1,9 +1,8 @@
 import pika
-import logging as log
+import nrtpygs.customlogger as log
 import os
 import threading
 import time
-import nrtpygs.mqclient.mqsettings as settings
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 CREDENTIALS = pika.PlainCredentials(
@@ -12,16 +11,6 @@ CREDENTIALS = pika.PlainCredentials(
 
 RMQ_HOST = os.environ['RMQ_HOST']
 
-# Turn off pika info and Debug Level logging
-log.getLogger('pika').setLevel(settings.PIKA_LOGLEVEL)
-log.basicConfig(
-    filename=settings.RMQ_LOGFILE,
-    level=settings.RMQ_LOGLEVEL,
-    format='%(asctime)s: %(name)s: %(levelname)s: %(message)s')
-
-# TODO: Test what this does!
-log = log.getLogger(__name__)
-
 
 class MqConnection():
     """
@@ -29,11 +18,12 @@ class MqConnection():
     At present a single channel is opened and the object returned.
     """
 
-    def __init__(self, name):
+    def __init__(self, source = 'Unknown'):
         self._stopping = False
         self.channel = None
         self.new_channel = None  # Non functional. See self.create_channel()
-        self.connection_name = settings.TLA + '.' + name
+        self.connection_name = source
+        self._logger = log.get_logger()
 
     def connect(self):
         """
@@ -55,7 +45,7 @@ class MqConnection():
             on_open_error_callback=self.on_connection_open_error,
             on_close_callback=self.on_connection_closed)
 
-        log.info('Connecting to %s', parameters.host)
+        self._logger.info('Connecting to %s', parameters.host)
         self.iothread = threading.Thread(
             target=self.connection.ioloop.start,
             args=())
@@ -86,7 +76,7 @@ class MqConnection():
         return self.channel
 
     def on_connection_open(self, _unused_connection):
-        log.info('Connection opened')
+        self._logger.info('Connection opened')
         self.channel = self.connection.channel()
         return
 
@@ -95,7 +85,7 @@ class MqConnection():
         This method is called by pika if the connection to RabbitMQ
         can't be established.
         """
-        log.error('Connection open failed, trying again in 3 seconds: %s', err)
+        self._logger.error('Connection open failed, trying again in 3 seconds: %s', err)
         self.connection.ioloop.call_later(3, self.connect)
         return
 
@@ -106,18 +96,18 @@ class MqConnection():
         RabbitMQ if it disconnects.
         """
         if self._stopping:
-            log.info('Connection closed by user')
+            self._logger.info('Connection closed by user')
             self.connection.ioloop.stop()
             self.connection = None
             self.channel = None
         else:
-            log.warning(
+            self._logger.warning(
                 'Connection closed unexpectedly, reopening in 1 second: %s',
                 reason)
             self.connection.ioloop.call_later(1, self.connect)
 
     def close(self):
-        log.info('Closing Connection')
+        self._logger.info('Closing Connection')
         self._stopping = True
         if self.connection is not None:
             self.connection.close()
@@ -147,10 +137,10 @@ class MqConnection():
         """
 
         if on_close_callback:
-            log.debug(
+            self._logger.debug(
                 'The channel on_close_callback is has been overloaded')
         else:
-            log.debug(
+            self._logger.debug(
                 'The channel on_close_callback is default to RmqConnection')
             on_close_callback = self.on_channel_closed
 
@@ -163,16 +153,16 @@ class MqConnection():
         return self.new_channel
 
     def on_channel_open(self, channel):
-        log.info('Channel opened')
+        self._logger.info('Channel opened')
 
     def on_channel_closed(self, channel, reason):
         """
         Invoked by pika when RabbitMQ unexpectedly closes the channel.
         """
         if not self._stopping:
-            log.warning('Channel %i was closed: %s', channel, reason)
+            self._logger.warning('Channel %i was closed: %s', channel, reason)
         else:
-            log.info('Channel %i was closed: %s', channel, reason)
+            self._logger.info('Channel %i was closed: %s', channel, reason)
 
 
 def main():
@@ -185,7 +175,6 @@ def main():
     - RMQ_USER
     - RMQ_PASS
     - RMQ_HOST
-    - SER_TLA
 
     See rcs-gsi/utils.setenv.sh for a tool to do this outside of the 4mnrt/gsi
     container.
