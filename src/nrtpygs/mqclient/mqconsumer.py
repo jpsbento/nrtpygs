@@ -65,8 +65,8 @@ class MqConsumer():
         self._callback = callback
         self._durable = durable
         self._arguments = arguments
-        self._setup_consume()
         self._logger = log.get_logger()
+        self._setup_consume()
 
     def _setup_consume(self):
         self._create_channel()
