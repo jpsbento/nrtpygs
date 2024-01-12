@@ -53,15 +53,14 @@ class MqConsumer():
     The class for holding information on an individual consumer
     """
 
-    def __init__(self, connection, exchange,
+    def __init__(self, connection: MqConnection, exchange,
                  binding_keys, queue_name, callback, durable, arguments):
         self._rmqconnection = connection
         self._connection = self._rmqconnection.get_connection()
         self._channel = None
         self._exchange = exchange
         self._binding_keys = binding_keys
-        if not re.search(r'^[A-Z]{3}', queue_name):
-            self._queue_name = queue_name
+        self._queue_name = queue_name
         self._callback = callback
         self._durable = durable
         self._arguments = arguments
