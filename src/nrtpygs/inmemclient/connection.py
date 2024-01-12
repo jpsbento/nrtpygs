@@ -68,9 +68,6 @@ class Connection():
         self._logger.debug('Closing Connection')
         if self.connection is not None:
             self.connection.close()
-        # Block until connection closes
-        while self.connection.is_open:
-            pass
 
 
 def main():
