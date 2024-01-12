@@ -6,10 +6,10 @@ import json
 
 class Producer():
 
-    def __init__(self, source='Unknown', cluster=True):
+    def __init__(self, source='Unknown'):
         self.source = source
         self._cluster = Connection()
-        self._connection = self._cluster.connect(cluster=cluster)
+        self._connection = self._cluster.connect()
         self._logger = log.get_logger()
 
     def publish(self, key, value):
@@ -51,7 +51,7 @@ def main():
     data = {
         "data": "test"
     }
-    prod.produce('message', data)
+    prod.publish('message', data)
     prod.disconnect()
 
 
