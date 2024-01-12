@@ -22,9 +22,9 @@ class Consumer():
         - callback
     """
 
-    def __init__(self, cluster=True):
+    def __init__(self):
         self._connection = Connection()
-        self._connection.connect(cluster=cluster)
+        self._connection.connect()
         self._consumers = []
         self._logger = log.get_logger()
 

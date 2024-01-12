@@ -5,9 +5,11 @@ import redis
 import timeout_decorator
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
-REDIS_HOST = os.environ['REDIS_HOST']
-REDIS_USERNAME = os.environ['REDIS_USERNAME']
-REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_USERNAME = os.getenv('REDIS_USERNAME')
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
+# This parameter determines if the redis instance we connect to is a cluster or not. 
+REDIS_CLUSTER = os.getenv('REDIS_CLUSTER', 'False').lower() in ('true', '1', 't')
 
 POOL = redis.ConnectionPool(
     host=REDIS_HOST,
@@ -27,13 +29,13 @@ class Connection():
         self._logger = log.get_logger()
 
     @timeout_decorator.timeout(20)
-    def connect(self, cluster=True):
+    def connect(self):
         """
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
-
-        if cluster:
+        
+        if REDIS_CLUSTER:
             self.connection = redis.RedisCluster(
                 host=os.environ['REDIS_HOST'],
                 username=REDIS_USERNAME,
