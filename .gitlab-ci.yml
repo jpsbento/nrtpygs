@@ -26,5 +26,5 @@ include:
   - project: 'nrt-crew/common/templates'
     ref: develop
     file: '/gitlab-ci/versioning.gitlab-ci.yml'
-  - local: '.workflows/package-wheel.yaml'
-  - local: '.workflows/GC-pypush.yaml'
+  - local: '.workflows/build-wheel.yaml'
+  
