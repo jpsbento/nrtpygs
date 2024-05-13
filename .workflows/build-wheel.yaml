@@ -1,7 +1,10 @@
 variables:
   # Define version suffix based on branch
-  VERSION_SUFFIX: $CI_COMMIT_REF_NAME == "main" ? "" : ($CI_COMMIT_REF_NAME == "develop" ? "a" : "b")
-
+  VERSION_SUFFIX: >
+    $CI_COMMIT_REF_NAME == "main" ? "" :
+    $CI_COMMIT_REF_NAME == "develop" ? "a$CI_PIPELINE_IID" :
+    "b$CI_PIPELINE_IID"
+    
 build_wheel:
   needs: ["gitversioning"]
   stage: build
