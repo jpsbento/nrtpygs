@@ -11,11 +11,11 @@ REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
 # This parameter determines if the redis instance we connect to is a cluster or not. 
 REDIS_CLUSTER = os.getenv('REDIS_CLUSTER', 'False').lower() in ('true', '1', 't')
 
-POOL = redis.ConnectionPool(
-    host=REDIS_HOST,
-    username=REDIS_USERNAME,
-    password=REDIS_PASSWORD,
-    port=6379)
+# POOL = redis.ConnectionPool(
+#     host=REDIS_HOST,
+#     username=REDIS_USERNAME,
+#     password=REDIS_PASSWORD,
+#     port=6379)
 
 
 class Connection():
@@ -25,7 +25,7 @@ class Connection():
     """
 
     def __init__(self):
-        self._pool = POOL
+        # self._pool = POOL
         self._logger = log.get_logger()
 
     @timeout_decorator.timeout(20)
