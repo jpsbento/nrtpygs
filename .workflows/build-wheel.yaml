@@ -1,15 +1,17 @@
 variables:
   VERSION_SUFFIX: ""
 
-before_script:
-  - |
-    if [ "$CI_COMMIT_REF_NAME" == "main" ]; then
-      export VERSION_SUFFIX=""
-    elif [ "$CI_COMMIT_REF_NAME" == "develop" ]; then
-      export VERSION_SUFFIX="a$CI_PIPELINE_IID"
-    else
-      export VERSION_SUFFIX="b$CI_PIPELINE_IID"
-    fi
+determine_version_suffix:
+  stage: prepare
+  script:
+    - |
+      if [ "$CI_COMMIT_REF_NAME" == "main" ]; then
+        export VERSION_SUFFIX=""
+      elif [ "$CI_COMMIT_REF_NAME" == "develop" ]; then
+        export VERSION_SUFFIX="a$CI_PIPELINE_IID"
+      else
+        export VERSION_SUFFIX="b$CI_PIPELINE_IID"
+      fi
 
 build_wheel:
   needs: ["gitversioning"]

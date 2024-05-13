@@ -6,7 +6,7 @@ workflow:
 
 stages:
   - .pre
-  - authenticate
+  - prepare
   - build
   - test
   - deploy
