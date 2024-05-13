@@ -13,6 +13,7 @@ determine_version_suffix:
       else
         export VERSION_SUFFIX="b$CI_PIPELINE_IID"
       fi
+      echo $VERSION_SUFFIX
 
 build_wheel:
   needs: ["gitversioning", "determine_version_suffix"]
