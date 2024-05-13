@@ -1,3 +1,38 @@
+determine_version_suffix:
+  stage: .pre
+  image: bash:latest
+  script:
+    - |
+      if [ "$CI_COMMIT_BRANCH" == "main" ]; then
+        export VERSION_SUFFIX=""
+      elif [ "$CI_COMMIT_BRANCH" == "develop" ]; then
+        export VERSION_SUFFIX="a$CI_PIPELINE_IID"
+      else
+        export VERSION_SUFFIX="b$CI_PIPELINE_IID"
+      fi
+      echo $VERSION_SUFFIX
+      echo "VERSION_SUFFIX=$VERSION_SUFFIX" > build.env
+  artifacts:
+    reports:
+      dotenv: build.env
+
+build_wheel:
+  needs: ["gitversioning", "determine_version_suffix"]
+  stage: build
+  image:
+    name: python:3.10.10-slim-buster
+    entrypoint: [""]
+  before_script: []
+  script:
+    # Building Package
+    - PYGS_VERSION=${_MAJOR_MINOR_PATCH_}${VERSION_SUFFIX} python3 setup.py clean bdist_wheel
+    - mv dist/nrtpygs-${_MAJOR_MINOR_PATCH_}${VERSION_SUFFIX}-py3-none-any.whl .
+  artifacts:
+    paths:
+      - nrtpygs-${_MAJOR_MINOR_PATCH_}${VERSION_SUFFIX}-py3-none-any.whl
+  after_script: []
+
+
 authenticate_with_GC_py_registry:
   stage: deploy
   image: google/cloud-sdk
@@ -11,7 +46,7 @@ authenticate_with_GC_py_registry:
       - pip.conf
 
 push_to_GC_py_registry:
-  needs: ["gitversioning", "build_wheel", "authenticate_with_GC_py_registry"]
+  needs: ["gitversioning", "build_wheel", "authenticate_with_GC_py_registry", "determine_version_suffix"]
   stage: deploy
   image:
     name: python:3.10.10-slim-buster
@@ -31,5 +66,5 @@ push_to_GC_py_registry:
     - export GOOGLE_APPLICATION_CREDENTIALS=key.json
     - >
       python -m twine upload --repository-url https://${GC_REGION}-python.pkg.dev/${GC_PROJECT_ID}/nrt-python-registry 
-      nrtpygs-${_MAJOR_MINOR_PATCH_}.post${CI_PIPELINE_IID}-py3-none-any.whl
+      nrtpygs-${_MAJOR_MINOR_PATCH_}${VERSION_SUFFIX}-py3-none-any.whl
   after_script: []
