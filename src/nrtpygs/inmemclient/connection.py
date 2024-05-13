@@ -34,7 +34,7 @@ class Connection():
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
-        
+        self._logger.debug('Attempting to connect to Redis')
         if REDIS_CLUSTER:
             self.connection = redis.RedisCluster(
                 host=os.environ['REDIS_HOST'],
