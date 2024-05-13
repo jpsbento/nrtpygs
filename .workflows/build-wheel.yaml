@@ -1,6 +1,3 @@
-variables:
-  VERSION_SUFFIX: ""
-
 determine_version_suffix:
   stage: .pre
   image: bash:latest
@@ -14,6 +11,10 @@ determine_version_suffix:
         export VERSION_SUFFIX="b$CI_PIPELINE_IID"
       fi
       echo $VERSION_SUFFIX
+      echo "VERSION_SUFFIX=$VERSION_SUFFIX" > build.env
+  artifacts:
+    reports:
+      dotenv: build.env
 
 build_wheel:
   needs: ["gitversioning", "determine_version_suffix"]
