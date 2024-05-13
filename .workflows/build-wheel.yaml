@@ -2,7 +2,8 @@ variables:
   VERSION_SUFFIX: ""
 
 determine_version_suffix:
-  stage: prepare
+  stage: .pre
+  image: bash:latest
   script:
     - |
       if [ "$CI_COMMIT_REF_NAME" == "main" ]; then
