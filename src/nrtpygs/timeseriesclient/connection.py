@@ -38,7 +38,7 @@ class Connection():
         if 'http' not in self._url:
             self._url = "http://" + self._url
 
-    @timeout_decorator.timeout(20)
+    @timeout_decorator.timeout(20, use_signals=False)
     def connect(self):
         """
         Create a connection, start the ioloop to connect
@@ -57,14 +57,14 @@ class Connection():
         except Exception as e:
             self._logger.error('Unable to connect to Influx Database: %s' % e)
 
-    @timeout_decorator.timeout(20)
+    @timeout_decorator.timeout(20, use_signals=False)
     def get_client(self):
         if self.client.ping():
             return self.client
         else:
             return None
 
-    @timeout_decorator.timeout(20)
+    @timeout_decorator.timeout(20, use_signals=False)
     def close(self):
         if self.client:
             self.client.close()
