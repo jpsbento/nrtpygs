@@ -2,7 +2,6 @@ import nrtpygs.customlogger as log
 import os
 import time
 import redis
-import timeout_decorator
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 REDIS_HOST = os.getenv('REDIS_HOST')
@@ -28,7 +27,6 @@ class Connection():
         # self._pool = POOL
         self._logger = log.get_logger()
 
-    # @timeout_decorator.timeout(20, use_signals=False)
     def connect(self):
         """
         Create a connection, start the ioloop to connect
@@ -56,14 +54,12 @@ class Connection():
         self._logger.debug('Connection opened')
         return self.connection
 
-    # @timeout_decorator.timeout(20, use_signals=False)
     def get_connection(self):
         while not self.connection.ping():
             time.sleep(0.1)
             pass
         return self.connection
 
-    # @timeout_decorator.timeout(20, use_signals=False)
     def close(self):
         self._logger.debug('Closing Connection')
         if self.connection is not None:
