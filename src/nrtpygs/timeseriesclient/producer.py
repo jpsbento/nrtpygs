@@ -15,11 +15,11 @@ class Producer():
 
     def write(self, fields, tags={"site": "nrt"}):
         """
-        Add message to python queue
+        Add message to time series
         """
 
         try:
-            data = Point(self._influxdb._source)
+            data = Point(measurement_name="generic_measurement")
             [data.tag(k, v) for k, v in tags.items()]
             [
                 data.field(k, v) if isinstance(v, (int, float))
