@@ -31,7 +31,6 @@ setup(
         "pytest==7.4.3",
         "python-statemachine==2.1.2",
         "redis==5.0.1",
-        "timeout_decorator==0.5.0",
         "influxdb-client==1.39.0",
     ]
 )
