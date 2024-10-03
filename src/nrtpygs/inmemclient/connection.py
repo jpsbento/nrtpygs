@@ -2,7 +2,6 @@ import nrtpygs.customlogger as log
 import os
 import time
 import redis
-import timeout_decorator
 
 # Connection parameters to the RabbitMQ server from ENV_VARS
 REDIS_HOST = os.getenv('REDIS_HOST')
@@ -11,11 +10,11 @@ REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
 # This parameter determines if the redis instance we connect to is a cluster or not. 
 REDIS_CLUSTER = os.getenv('REDIS_CLUSTER', 'False').lower() in ('true', '1', 't')
 
-POOL = redis.ConnectionPool(
-    host=REDIS_HOST,
-    username=REDIS_USERNAME,
-    password=REDIS_PASSWORD,
-    port=6379)
+# POOL = redis.ConnectionPool(
+#     host=REDIS_HOST,
+#     username=REDIS_USERNAME,
+#     password=REDIS_PASSWORD,
+#     port=6379)
 
 
 class Connection():
@@ -25,16 +24,15 @@ class Connection():
     """
 
     def __init__(self):
-        self._pool = POOL
+        # self._pool = POOL
         self._logger = log.get_logger()
 
-    @timeout_decorator.timeout(20)
     def connect(self):
         """
         Create a connection, start the ioloop to connect
         inside a thread and then return the connection
         """
-        
+        self._logger.debug('Attempting to connect to Redis')
         if REDIS_CLUSTER:
             self.connection = redis.RedisCluster(
                 host=os.environ['REDIS_HOST'],
@@ -56,14 +54,12 @@ class Connection():
         self._logger.debug('Connection opened')
         return self.connection
 
-    @timeout_decorator.timeout(20)
     def get_connection(self):
         while not self.connection.ping():
             time.sleep(0.1)
             pass
         return self.connection
 
-    @timeout_decorator.timeout(20)
     def close(self):
         self._logger.debug('Closing Connection')
         if self.connection is not None:

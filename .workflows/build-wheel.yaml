@@ -6,9 +6,9 @@ determine_version_suffix:
       if [ "$CI_COMMIT_BRANCH" == "main" ]; then
         export VERSION_SUFFIX=""
       elif [ "$CI_COMMIT_BRANCH" == "develop" ]; then
-        export VERSION_SUFFIX="a$CI_PIPELINE_IID"
-      else
         export VERSION_SUFFIX="b$CI_PIPELINE_IID"
+      else
+        export VERSION_SUFFIX="a$CI_PIPELINE_IID"
       fi
       echo $VERSION_SUFFIX
       echo "VERSION_SUFFIX=$VERSION_SUFFIX" > build.env
