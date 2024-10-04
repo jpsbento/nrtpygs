@@ -6,12 +6,13 @@ from influxdb_client import Point
 
 class Producer():
 
-    def __init__(self):
+    def __init__(self, source='Unknown'):
         self._influxdb = Connection()
         self._influxClient = self._influxdb.connect()
         self._write_api = self._influxClient.write_api(
             write_options=SYNCHRONOUS)
         self._logger = log.get_logger()
+        self.source = source
 
     def write(self, fields, tags={"site": "nrt"}):
         """
@@ -19,7 +20,7 @@ class Producer():
         """
 
         try:
-            data = Point(measurement_name="generic_measurement")
+            data = Point(measurement_name=self.source)
             [data.tag(k, v) for k, v in tags.items()]
             [
                 data.field(k, v) if isinstance(v, (int, float))
