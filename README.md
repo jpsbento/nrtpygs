@@ -1,9 +1,10 @@
-# rcs-gsi
-Repository for the Robotic Control System - Generic Services Python Module
+# NRTPYGS
+Repository for the New Robotic Telescope Generic Services Python Module
 
 This repository contains;
 * Code for an inmemory storage, such as Redis. 
-* Code for rmqclient - The python Library for RCS services to communicate with a 
+* Code for rmqclient - The python Library for RCS services to communicate with a
+* A time series client code for InfluxDB instance. 
 
 This is structured to be the source code for a python module, which is built and deployed onto a 
 google cloud python registry automatically. 
