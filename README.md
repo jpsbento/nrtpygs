@@ -26,22 +26,22 @@ or add these lines to the requirements.txt file:
 
 These are the list of required environment variables your app or container must have setup for this code to work:
 
-RMQ_HOST=localhost  # The RabbitMQ server options if using rabbitmq
-RMQ_USER=rmq
-RMQ_PASS=rmq
-ADM_USER=rmq-admin
-ADM_PASS=rmq-admin
+* RMQ_HOST=localhost  # The RabbitMQ server options if using rabbitmq
+* RMQ_USER=rmq
+* RMQ_PASS=rmq
+* ADM_USER=rmq-admin
+* ADM_PASS=rmq-admin
 
-REDIS_HOST=localhost    # The Redis parameters if using redis
-REDIS_USERNAME=default
-REDIS_PASSWORD=redis_password
+* REDIS_HOST=localhost    # The Redis parameters if using redis
+* REDIS_USERNAME=default
+* REDIS_PASSWORD=redis_password
 
 
-INFLUX_HOST = influxhost    # The InfluxDB if using InfluxDB.
-INFLUX_PORT = influxport
-DOCKER_INFLUXDB_INIT_USERNAME = influxusername
-DOCKER_INFLUXDB_INIT_PASSWORD = influxpassword
-DOCKER_INFLUXDB_INIT_BUCKET = influxdb
+* INFLUX_HOST = influxhost    # The InfluxDB if using InfluxDB.
+* INFLUX_PORT = influxport
+* DOCKER_INFLUXDB_INIT_USERNAME = influxusername
+* DOCKER_INFLUXDB_INIT_PASSWORD = influxpassword
+* DOCKER_INFLUXDB_INIT_BUCKET = influxdb
 
 
 #### Using the module in the code
